@@ -5,7 +5,8 @@ import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Clock, AlertCircle, CheckCircle2, FileText } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Clock, AlertCircle, CheckCircle2, FileText, Zap } from 'lucide-react';
 
 interface WritingAreaProps {
   prompt: string;
@@ -13,6 +14,7 @@ interface WritingAreaProps {
   onComplete: (content: string, duration: number) => void;
   placeholder?: string;
   autoSubmit?: boolean;
+  isDevelopment?: boolean; // 개발 모드: 조기 제출 버튼 표시
 }
 
 export function WritingArea({
@@ -21,6 +23,7 @@ export function WritingArea({
   onComplete,
   placeholder = '이곳에 자유롭게 작성해주세요...',
   autoSubmit = true,
+  isDevelopment = false,
 }: WritingAreaProps) {
   const [content, setContent] = useState('');
   const [timeLeft, setTimeLeft] = useState(durationMinutes * 60); // seconds
@@ -28,6 +31,7 @@ export function WritingArea({
   const [isCompleted, setIsCompleted] = useState(false);
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const contentRef = useRef<string>('');
 
   const totalSeconds = durationMinutes * 60;
   const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
@@ -38,13 +42,21 @@ export function WritingArea({
   const isWarning = timeLeft <= 120 && timeLeft > 0;
   const isUrgent = timeLeft <= 60 && timeLeft > 0;
 
+  // content가 변경될 때마다 ref 업데이트
   useEffect(() => {
-    if (content.trim() && !isStarted) {
-      // 글쓰기 시작
+    contentRef.current = content;
+  }, [content]);
+
+  // Effect 1: 글쓰기 시작 감지 (content가 변경될 때만)
+  useEffect(() => {
+    if (content.trim() && !isStarted && !isCompleted) {
       setIsStarted(true);
       startTimeRef.current = Date.now();
     }
+  }, [content, isStarted, isCompleted]);
 
+  // Effect 2: 타이머 실행 (isStarted가 변경될 때만)
+  useEffect(() => {
     if (isStarted && !isCompleted) {
       timerRef.current = setInterval(() => {
         setTimeLeft((prev) => {
@@ -55,7 +67,8 @@ export function WritingArea({
 
             if (autoSubmit) {
               const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
-              onComplete(content, duration);
+              // ref를 통해 최신 content 값 가져오기
+              onComplete(contentRef.current, duration);
             }
             return 0;
           }
@@ -67,7 +80,7 @@ export function WritingArea({
         if (timerRef.current) clearInterval(timerRef.current);
       };
     }
-  }, [isStarted, isCompleted, content, autoSubmit, onComplete]);
+  }, [isStarted, isCompleted, autoSubmit, onComplete]);
 
   const formatTime = (mins: number, secs: number) => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
@@ -75,6 +88,17 @@ export function WritingArea({
 
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
   const charCount = content.length;
+
+  const handleDevSubmit = () => {
+    if (content.trim() && !isCompleted) {
+      setIsCompleted(true);
+      if (timerRef.current) clearInterval(timerRef.current);
+      const duration = isStarted
+        ? Math.floor((Date.now() - startTimeRef.current) / 1000)
+        : 0;
+      onComplete(content, duration);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -190,11 +214,29 @@ export function WritingArea({
       </Card>
 
       {/* 안내 */}
-      <div className="text-center p-4 bg-secondary/30 rounded-xl">
+      <div className="text-center p-4 bg-secondary/30 rounded-xl space-y-2">
+        <p className="text-base text-muted-foreground font-medium">
+          천천히 편안하게 작성하시면 됩니다.
+        </p>
         <p className="text-sm text-muted-foreground">
-          천천히 편안하게 작성하시면 됩니다. 중간에 자동으로 저장됩니다.
+          {durationMinutes}분이 경과하면 자동으로 제출되어 다음 단계로 넘어갑니다.
         </p>
       </div>
+
+      {/* 개발용 조기 제출 버튼 */}
+      {isDevelopment && !isCompleted && (
+        <div className="fixed bottom-6 right-6 z-50">
+          <Button
+            onClick={handleDevSubmit}
+            disabled={!content.trim()}
+            size="lg"
+            className="shadow-lg bg-amber-500 hover:bg-amber-600 text-white font-bold"
+          >
+            <Zap className="w-5 h-5 mr-2" />
+            [DEV] 즉시 제출
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

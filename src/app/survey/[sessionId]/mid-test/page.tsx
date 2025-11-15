@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { SurveyLayout } from '@/components/layout/SurveyLayout';
 import { QuestionnaireItem } from '@/components/survey/QuestionnaireItem';
@@ -14,15 +14,72 @@ export default function MidTestPage() {
   const sessionId = params.sessionId as string;
 
   const [panasResponses, setPanasResponses] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+  const [participantGroup, setParticipantGroup] = useState<string>('');
 
   const isFormComplete = PANAS_SF_10_QUESTIONS.every((q) => panasResponses[q.id]);
 
-  const handleNext = () => {
-    if (isFormComplete) {
+  // 참여자 그룹 정보 가져오기
+  useEffect(() => {
+    const fetchParticipantGroup = async () => {
+      try {
+        const response = await fetch(`/api/check-progress?participantId=${sessionId}`);
+        const data = await response.json();
+        if (data.success && data.data) {
+          setParticipantGroup(data.data.groupAssignment);
+        }
+      } catch (error) {
+        console.error('Failed to fetch participant group:', error);
+      }
+    };
+    fetchParticipantGroup();
+  }, [sessionId]);
+
+  const handleNext = async () => {
+    if (!isFormComplete) return;
+
+    setIsSaving(true);
+    setError('');
+
+    try {
       const scores = calculatePANASScores(panasResponses);
       console.log('Mid-test PANAS scores:', scores);
 
-      router.push(`/survey/${sessionId}/intervention`);
+      // API로 전송
+      const response = await fetch('/api/save-mid-test', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          participantId: sessionId,
+          responses: panasResponses,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || '중간 검사 결과 저장에 실패했습니다.');
+        setIsSaving(false);
+        return;
+      }
+
+      console.log('Mid-test completed and saved:', data);
+
+      // 그룹에 따라 다음 페이지 결정
+      if (participantGroup === 'C') {
+        // C 그룹은 중립 글쓰기로 이동
+        router.push(`/survey/${sessionId}/neutral-writing`);
+      } else {
+        // A, B 그룹은 자기자비 글쓰기로 이동
+        router.push(`/survey/${sessionId}/intervention`);
+      }
+    } catch (error) {
+      console.error('Mid-test save error:', error);
+      setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      setIsSaving(false);
     }
   };
 
@@ -31,11 +88,12 @@ export default function MidTestPage() {
 
   return (
     <SurveyLayout
-      currentStep={5}
+      currentStep={6}
       totalSteps={10}
       stepTitle="중간 측정"
       onNext={handleNext}
-      isNextDisabled={!isFormComplete}
+      isNextDisabled={!isFormComplete || isSaving}
+      nextLabel={isSaving ? "저장 중..." : "다음"}
     >
       <div className="space-y-8">
         {/* 안내 */}
@@ -77,11 +135,20 @@ export default function MidTestPage() {
         </div>
 
         {/* 완료 알림 */}
-        {isFormComplete && (
+        {isFormComplete && !error && (
           <Alert className="bg-primary/5 border-primary/30">
             <Heart className="h-5 w-5 text-primary" />
             <AlertDescription className="text-base font-medium">
               모든 문항에 답변하셨습니다. 잠시 쉬어가셔도 좋습니다.
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {/* 에러 메시지 */}
+        {error && (
+          <Alert variant="destructive" className="border-2">
+            <AlertDescription className="text-lg font-semibold">
+              {error}
             </AlertDescription>
           </Alert>
         )}

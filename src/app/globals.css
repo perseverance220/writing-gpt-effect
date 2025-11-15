@@ -7,38 +7,38 @@
 
 @layer base {
   :root {
-    /* 따뜻하고 편안한 색상 팔레트 (노인 친화적) */
-    --background: 45 20% 98%;
-    --foreground: 220 15% 20%;
+    /* 따뜻하고 편안한 색상 팔레트 (노인 친화적 - 대비 강화) */
+    --background: 45 25% 96%;
+    --foreground: 220 20% 15%;
     --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
+    --card-foreground: 220 20% 15%;
     --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
+    --popover-foreground: 220 20% 15%;
 
-    /* 주요 색상: 차분한 청록색 (신뢰감, 안정감) */
-    --primary: 195 65% 45%;
+    /* 주요 색상: 진한 청록색 (대비 개선, 신뢰감, 안정감) */
+    --primary: 195 75% 40%;
     --primary-foreground: 0 0% 100%;
 
-    /* 보조 색상: 따뜻한 베이지 */
-    --secondary: 40 30% 92%;
-    --secondary-foreground: 220 15% 20%;
+    /* 보조 색상: 따뜻한 베이지 (더 진하게) */
+    --secondary: 40 35% 88%;
+    --secondary-foreground: 220 20% 15%;
 
-    --muted: 40 20% 95%;
-    --muted-foreground: 220 10% 50%;
+    --muted: 40 25% 92%;
+    --muted-foreground: 220 15% 40%;
 
     /* 강조 색상: 부드러운 코랄 */
-    --accent: 15 75% 70%;
-    --accent-foreground: 220 15% 20%;
+    --accent: 15 75% 65%;
+    --accent-foreground: 220 20% 15%;
 
-    --destructive: 0 70% 60%;
+    --destructive: 0 75% 55%;
     --destructive-foreground: 0 0% 100%;
 
-    /* 경계선: 부드러운 회색 */
-    --border: 220 15% 88%;
-    --input: 220 15% 88%;
-    --ring: 195 65% 45%;
+    /* 경계선: 더 명확한 회색 (대비 개선) */
+    --border: 220 20% 80%;
+    --input: 220 20% 80%;
+    --ring: 195 75% 40%;
 
-    --radius: 0.75rem;
+    --radius: 1rem;
   }
 }
 
@@ -50,9 +50,10 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Pretendard Variable', Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-    /* 노인 친화: 기본 폰트 크기 18px */
-    font-size: 18px;
-    line-height: 1.7;
+    /* 노인 친화: 모바일에 맞는 기본 폰트 크기 16px */
+    font-size: 16px;
+    line-height: 1.6;
+    font-weight: 500;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -79,45 +80,47 @@
 
   /* 버튼 및 링크 터치 영역 확보 */
   button, a {
-    @apply min-h-[44px];
+    @apply min-h-[48px];
   }
 }
 
 @layer components {
-  /* 노인 친화 컨테이너 */
+  /* 노인 친화 컨테이너 - 모바일 최적화 */
   .senior-container {
-    @apply max-w-2xl mx-auto px-6 py-8;
+    @apply max-w-md mx-auto px-4 py-4;
   }
 
-  /* 큰 터치 영역 버튼 */
+  /* 큰 터치 영역 버튼 - 모바일 적정 크기 */
   .senior-button {
-    @apply min-h-[56px] text-lg font-semibold px-8 rounded-xl;
+    @apply min-h-[64px] text-xl font-bold px-6 rounded-xl shadow-lg
+           transition-all duration-200 hover:shadow-xl;
   }
 
-  /* 읽기 쉬운 카드 */
+  /* 읽기 쉬운 카드 - 모바일 최적화 */
   .senior-card {
-    @apply bg-card border-2 border-border rounded-2xl shadow-sm p-6;
+    @apply bg-card border-2 border-border rounded-2xl shadow-lg p-6;
   }
 
-  /* 질문 스타일 */
+  /* 질문 스타일 - 모바일 적정 크기 */
   .question-text {
-    @apply text-xl font-semibold leading-relaxed mb-4;
+    @apply text-xl font-bold leading-relaxed mb-4;
   }
 
-  /* 라디오/체크박스 옵션 */
+  /* 라디오/체크박스 옵션 - 모바일 최적화 */
   .option-item {
     @apply flex items-center gap-4 p-5 border-2 border-border rounded-xl
-           hover:border-primary hover:bg-primary/5 transition-all cursor-pointer
-           min-h-[60px];
+           hover:border-primary hover:bg-primary/10 hover:shadow-md
+           transition-all duration-200 cursor-pointer
+           min-h-[64px] text-lg font-medium;
   }
 
   .option-item:has(input:checked) {
-    @apply border-primary bg-primary/10;
+    @apply border-primary bg-primary/15 shadow-md;
   }
 
   /* 진행 바 */
   .progress-indicator {
-    @apply text-sm font-medium text-muted-foreground mb-2;
+    @apply text-lg font-semibold text-muted-foreground mb-2;
   }
 }
 

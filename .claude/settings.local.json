@@ -10,7 +10,12 @@
       "Bash(npx shadcn@latest add:*)",
       "Bash(npm view:*)",
       "Bash(npm run build:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(where:*)",
+      "Bash(cat:*)",
+      "Bash(claude mcp add:*)",
+      "Bash(claude mcp list:*)",
+      "Bash(curl:*)"
     ],
     "deny": [],
     "ask": []

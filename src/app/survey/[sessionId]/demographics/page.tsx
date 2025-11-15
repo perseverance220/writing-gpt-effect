@@ -7,6 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { User } from 'lucide-react';
 
 export default function DemographicsPage() {
@@ -22,6 +23,9 @@ export default function DemographicsPage() {
     mainStressor: '',
   });
 
+  const [isSaving, setIsSaving] = useState(false);
+  const [error, setError] = useState('');
+
   const isFormComplete =
     formData.age &&
     formData.educationLevel &&
@@ -29,11 +33,45 @@ export default function DemographicsPage() {
     formData.livingArrangement &&
     formData.mainStressor.trim();
 
-  const handleNext = () => {
-    if (isFormComplete) {
-      // 임시: 데이터 저장 후 다음 페이지로
-      console.log('Demographics data:', formData);
-      router.push(`/survey/${sessionId}/pre-test`);
+  const handleNext = async () => {
+    if (!isFormComplete) return;
+
+    setIsSaving(true);
+    setError('');
+
+    try {
+      // 인구통계 정보를 DB에 저장
+      const response = await fetch('/api/save-demographics', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          participantId: sessionId,
+          demographics: {
+            age: formData.age,
+            educationLevel: formData.educationLevel,
+            maritalStatus: formData.maritalStatus,
+            livingArrangement: formData.livingArrangement,
+            mainStressor: formData.mainStressor,
+          },
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        setError(data.error || '정보 저장에 실패했습니다.');
+        setIsSaving(false);
+        return;
+      }
+
+      // 저장 성공 - 다음 페이지로 이동
+      router.push(`/survey/${sessionId}/pre-test/self-compassion`);
+    } catch (error) {
+      console.error('Demographics save error:', error);
+      setError('서버 연결에 실패했습니다. 잠시 후 다시 시도해주세요.');
+      setIsSaving(false);
     }
   };
 
@@ -43,86 +81,95 @@ export default function DemographicsPage() {
       totalSteps={10}
       stepTitle="기본 정보"
       onNext={handleNext}
-      isNextDisabled={!isFormComplete}
+      isNextDisabled={!isFormComplete || isSaving}
+      nextLabel={isSaving ? "저장 중..." : "다음"}
     >
-      <div className="space-y-8">
+      <div className="space-y-5">
         {/* 안내 */}
-        <div className="bg-secondary/50 border-2 border-border rounded-2xl p-6">
-          <div className="flex gap-4">
-            <User className="w-8 h-8 text-primary flex-shrink-0" />
+        <div className="bg-secondary/50 border-2 border-border rounded-xl p-5">
+          <div className="flex gap-3">
+            <User className="w-7 h-7 text-primary flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-xl font-bold mb-2">기본 정보 입력</h3>
+              <h3 className="text-lg font-bold mb-1">기본 정보 입력</h3>
               <p className="text-base text-muted-foreground leading-relaxed">
-                연구를 위한 기본 정보를 입력해주세요. 모든 정보는 익명으로 처리되며 안전하게 보관됩니다.
+                연구를 위한 기본 정보를 입력해주세요
               </p>
             </div>
           </div>
         </div>
 
         {/* 질문 1: 연령 */}
-        <Card className="senior-card">
-          <div className="space-y-4">
-            <Label className="question-text">1. 현재 나이를 선택해주세요</Label>
+        <Card className="border-2 border-border rounded-xl shadow-sm p-5">
+          <div className="space-y-3">
+            <Label className="text-lg font-bold block">1. 현재 나이를 선택해주세요</Label>
             <RadioGroup value={formData.age} onValueChange={(value) => setFormData({ ...formData, age: value })}>
-              {['60-64세', '65-69세', '70-74세'].map((option) => (
-                <label key={option} className="option-item">
-                  <RadioGroupItem value={option} className="w-6 h-6" />
-                  <span className="text-lg">{option}</span>
-                </label>
-              ))}
+              <div className="space-y-2">
+                {['60-64세', '65-69세', '70-74세'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                    <RadioGroupItem value={option} className="w-6 h-6 flex-shrink-0" />
+                    <span className="text-lg font-medium">{option}</span>
+                  </label>
+                ))}
+              </div>
             </RadioGroup>
           </div>
         </Card>
 
         {/* 질문 2: 학력 */}
-        <Card className="senior-card">
-          <div className="space-y-4">
-            <Label className="question-text">2. 최종 학력을 선택해주세요</Label>
+        <Card className="border-2 border-border rounded-xl shadow-sm p-5">
+          <div className="space-y-3">
+            <Label className="text-lg font-bold block">2. 최종 학력을 선택해주세요</Label>
             <RadioGroup value={formData.educationLevel} onValueChange={(value) => setFormData({ ...formData, educationLevel: value })}>
-              {['초등학교 졸업', '중학교 졸업', '고등학교 졸업', '전문대학 졸업', '대학교 졸업', '대학원 졸업'].map((option) => (
-                <label key={option} className="option-item">
-                  <RadioGroupItem value={option} className="w-6 h-6" />
-                  <span className="text-lg">{option}</span>
-                </label>
-              ))}
+              <div className="space-y-2">
+                {['초등학교 졸업', '중학교 졸업', '고등학교 졸업', '전문대학 졸업', '대학교 졸업', '대학원 졸업'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                    <RadioGroupItem value={option} className="w-6 h-6 flex-shrink-0" />
+                    <span className="text-lg font-medium">{option}</span>
+                  </label>
+                ))}
+              </div>
             </RadioGroup>
           </div>
         </Card>
 
         {/* 질문 3: 결혼 상태 */}
-        <Card className="senior-card">
-          <div className="space-y-4">
-            <Label className="question-text">3. 현재 결혼 상태를 선택해주세요</Label>
+        <Card className="border-2 border-border rounded-xl shadow-sm p-5">
+          <div className="space-y-3">
+            <Label className="text-lg font-bold block">3. 현재 결혼 상태를 선택해주세요</Label>
             <RadioGroup value={formData.maritalStatus} onValueChange={(value) => setFormData({ ...formData, maritalStatus: value })}>
-              {['기혼', '미혼', '이혼', '사별'].map((option) => (
-                <label key={option} className="option-item">
-                  <RadioGroupItem value={option} className="w-6 h-6" />
-                  <span className="text-lg">{option}</span>
-                </label>
-              ))}
+              <div className="space-y-2">
+                {['기혼', '미혼', '이혼', '사별'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                    <RadioGroupItem value={option} className="w-6 h-6 flex-shrink-0" />
+                    <span className="text-lg font-medium">{option}</span>
+                  </label>
+                ))}
+              </div>
             </RadioGroup>
           </div>
         </Card>
 
         {/* 질문 4: 동거 형태 */}
-        <Card className="senior-card">
-          <div className="space-y-4">
-            <Label className="question-text">4. 현재 누구와 함께 살고 계신가요?</Label>
+        <Card className="border-2 border-border rounded-xl shadow-sm p-5">
+          <div className="space-y-3">
+            <Label className="text-lg font-bold block">4. 현재 누구와 함께 살고 계신가요?</Label>
             <RadioGroup value={formData.livingArrangement} onValueChange={(value) => setFormData({ ...formData, livingArrangement: value })}>
-              {['혼자 살고 있음', '배우자와 함께', '자녀와 함께', '기타 가족과 함께'].map((option) => (
-                <label key={option} className="option-item">
-                  <RadioGroupItem value={option} className="w-6 h-6" />
-                  <span className="text-lg">{option}</span>
-                </label>
-              ))}
+              <div className="space-y-2">
+                {['혼자 살고 있음', '배우자와 함께', '자녀와 함께', '기타 가족과 함께'].map((option) => (
+                  <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
+                    <RadioGroupItem value={option} className="w-6 h-6 flex-shrink-0" />
+                    <span className="text-lg font-medium">{option}</span>
+                  </label>
+                ))}
+              </div>
             </RadioGroup>
           </div>
         </Card>
 
         {/* 질문 5: 주요 스트레스 원인 */}
-        <Card className="senior-card">
-          <div className="space-y-4">
-            <Label htmlFor="stressor" className="question-text">
+        <Card className="border-2 border-border rounded-xl shadow-sm p-5">
+          <div className="space-y-3">
+            <Label htmlFor="stressor" className="text-lg font-bold block">
               5. 현재 가장 큰 스트레스나 걱정거리가 있다면 간단히 적어주세요
             </Label>
             <p className="text-sm text-muted-foreground">
@@ -133,13 +180,22 @@ export default function DemographicsPage() {
               value={formData.mainStressor}
               onChange={(e) => setFormData({ ...formData, mainStressor: e.target.value })}
               placeholder="자유롭게 작성해주세요..."
-              className="min-h-[120px] text-lg leading-relaxed resize-none"
+              className="min-h-[100px] text-lg leading-relaxed resize-none border-2"
             />
             <p className="text-sm text-muted-foreground text-right">
               {formData.mainStressor.length}자
             </p>
           </div>
         </Card>
+
+        {/* 에러 메시지 */}
+        {error && (
+          <Alert variant="destructive" className="border-2">
+            <AlertDescription className="text-lg font-semibold">
+              {error}
+            </AlertDescription>
+          </Alert>
+        )}
       </div>
     </SurveyLayout>
   );

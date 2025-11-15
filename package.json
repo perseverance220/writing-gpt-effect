@@ -2,11 +2,13 @@
   "name": "writing-gpt-effect",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "register-participants": "node scripts/register-participants.js"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
