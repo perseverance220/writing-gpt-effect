@@ -174,6 +174,10 @@ export default function Home() {
                       <span className="text-primary text-lg font-bold">•</span>
                       <span className="font-medium">중간에 자동 저장되어 안전합니다</span>
                     </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary text-lg font-bold">•</span>
+                      <span className="font-medium">이 설문은 시작부터 마칠 때까지 연속으로 진행하셔야 합니다.</span>
+                    </li>
                   </ul>
                 </div>
               </div>
