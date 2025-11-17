@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { SurveyLayout } from '@/components/layout/SurveyLayout';
 import { WritingArea } from '@/components/survey/WritingArea';
@@ -8,23 +8,63 @@ import { Card } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Sparkles, MessageCircle } from 'lucide-react';
 
-// 임시: 실제로는 세션에서 집단 정보를 가져와야 함
-const MOCK_GROUP: 'A' | 'B' | 'C' = 'A';
-
 export default function InterventionPage() {
   const router = useRouter();
   const params = useParams();
   const sessionId = params.sessionId as string;
 
+  const [groupAssignment, setGroupAssignment] = useState<'A' | 'B' | 'C' | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentStage, setCurrentStage] = useState<number>(1);
   const [isStageCompleted, setIsStageCompleted] = useState(false);
   const [gptFeedback, setGptFeedback] = useState<string>('');
+  const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
+  const [feedbackMetadata, setFeedbackMetadata] = useState<{
+    tokensUsed?: number;
+    responseTimeMs?: number;
+    systemPrompt?: string;
+    userPrompt?: string;
+  }>({});
 
   // A집단: 3단계 (공통인류성, 자기친절, 마음챙김) + GPT 피드백
   // B집단: 3단계 (피드백 없음)
   // C집단: 1단계 (중립적 글쓰기)
 
-  const totalStages = MOCK_GROUP === 'C' ? 1 : 3;
+  // 참여자 그룹 정보 가져오기
+  useEffect(() => {
+    const fetchGroupAssignment = async () => {
+      try {
+        const response = await fetch(`/api/check-progress?participantId=${sessionId}`);
+        const result = await response.json();
+
+        if (result.success && result.data.groupAssignment) {
+          setGroupAssignment(result.data.groupAssignment as 'A' | 'B' | 'C');
+        } else {
+          console.error('Failed to fetch group assignment');
+          router.push(`/survey/${sessionId}/consent`);
+        }
+      } catch (error) {
+        console.error('Error fetching group assignment:', error);
+        router.push(`/survey/${sessionId}/consent`);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchGroupAssignment();
+  }, [sessionId, router]);
+
+  if (isLoading || !groupAssignment) {
+    return (
+      <SurveyLayout currentStep={6} totalSteps={10} stepTitle="글쓰기 활동">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </SurveyLayout>
+    );
+  }
+
+  const totalStages = groupAssignment === 'C' ? 1 : 3;
 
   const prompts = {
     A: [
@@ -105,19 +145,127 @@ export default function InterventionPage() {
     ],
   };
 
-  const currentPrompt = prompts[MOCK_GROUP][currentStage - 1];
+  const currentPrompt = prompts[groupAssignment][currentStage - 1];
 
   const handleStageComplete = async (content: string, duration: number) => {
     console.log(`Stage ${currentStage} completed:`, { content, duration });
 
-    // A집단만 GPT 피드백 받기 (목업)
-    if (MOCK_GROUP === 'A') {
-      // 임시 피드백 (실제로는 API 호출)
-      const mockFeedback = `많은 분들이 비슷한 어려움을 경험하고 계십니다. 혼자가 아니라는 것을 기억해 주세요. 이런 경험을 통해 우리는 서로를 더 깊이 이해할 수 있습니다.`;
-      setGptFeedback(mockFeedback);
-    }
-
+    // 먼저 완료 상태로 전환
     setIsStageCompleted(true);
+
+    // A집단만 GPT 피드백 받기
+    if (groupAssignment === 'A') {
+      setIsLoadingFeedback(true);
+
+      try {
+        console.log('[intervention] Requesting GPT feedback...');
+        const response = await fetch('/api/generate-feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            userWriting: content,
+            stage: currentStage
+          }),
+        });
+
+        const result = await response.json();
+
+        console.log('[intervention] Full API response:', result);
+
+        if (!response.ok || !result.success) {
+          console.error('[intervention] GPT API error:', result);
+          throw new Error(result.error || 'Failed to generate feedback');
+        }
+
+        console.log('[intervention] GPT feedback received:', {
+          feedback: result.feedback,
+          feedbackLength: result.feedback?.length,
+          tokensUsed: result.metadata?.tokensUsed,
+          responseTime: result.metadata?.responseTimeMs,
+        });
+
+        // 피드백 설정
+        if (result.feedback) {
+          console.log('[intervention] Setting feedback state with:', result.feedback.substring(0, 100));
+          setGptFeedback(result.feedback);
+        } else {
+          console.error('[intervention] No feedback in result!');
+        }
+        setFeedbackMetadata(result.metadata);
+
+        // GPT 피드백과 글쓰기 데이터를 DB에 저장
+        const taskTypeMap: Record<number, string> = {
+          1: 'common_humanity',
+          2: 'self_kindness',
+          3: 'mindfulness',
+        };
+
+        const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+
+        console.log('[intervention] Saving intervention data with GPT feedback...');
+        const saveResponse = await fetch('/api/save-intervention', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            participantId: sessionId,
+            taskType: taskTypeMap[currentStage],
+            writingContent: content,
+            wordCount,
+            durationSeconds: duration,
+            gptFeedback: result.feedback,
+            gptPrompt: `${result.metadata.systemPrompt}\n\n${result.metadata.userPrompt}`,
+            modelVersion: 'gpt-5-mini',
+            tokensUsed: result.metadata.tokensUsed,
+            responseTimeMs: result.metadata.responseTimeMs,
+          }),
+        });
+
+        const saveResult = await saveResponse.json();
+        if (saveResponse.ok) {
+          console.log('[intervention] Data saved successfully:', saveResult);
+        } else {
+          console.error('[intervention] Save failed:', saveResult);
+        }
+      } catch (error) {
+        console.error('[intervention] Error generating feedback:', error);
+        setGptFeedback('피드백 생성 중 오류가 발생했습니다. 다음 단계로 진행해주세요.');
+      } finally {
+        setIsLoadingFeedback(false);
+      }
+    } else {
+      // B, C 집단은 피드백 없이 글쓰기만 저장
+      const taskTypeMap: Record<number, string> = {
+        1: groupAssignment === 'C' ? 'neutral' : 'common_humanity',
+        2: 'self_kindness',
+        3: 'mindfulness',
+      };
+
+      const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
+
+      try {
+        console.log('[intervention] Saving intervention data (no GPT feedback)...');
+        const saveResponse = await fetch('/api/save-intervention', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            participantId: sessionId,
+            taskType: taskTypeMap[currentStage],
+            writingContent: content,
+            wordCount,
+            durationSeconds: duration,
+          }),
+        });
+
+        const saveResult = await saveResponse.json();
+        if (saveResponse.ok) {
+          console.log('[intervention] Data saved successfully:', saveResult);
+        } else {
+          console.error('[intervention] Save failed:', saveResult);
+        }
+      } catch (error) {
+        console.error('[intervention] Error saving intervention:', error);
+      }
+    }
   };
 
   const handleNextStage = () => {
@@ -126,7 +274,7 @@ export default function InterventionPage() {
       setIsStageCompleted(false);
       setGptFeedback('');
     } else {
-      router.push(`/survey/${sessionId}/post-test`);
+      router.push(`/survey/${sessionId}/post-test/self-compassion`);
     }
   };
 
@@ -141,21 +289,21 @@ export default function InterventionPage() {
       currentStep={6}
       totalSteps={10}
       stepTitle={`글쓰기 활동 (${currentStage}/${totalStages})`}
-      onNext={isStageCompleted ? handleNextStage : undefined}
+      onNext={isStageCompleted && !isLoadingFeedback ? handleNextStage : undefined}
       nextLabel={currentStage < totalStages ? '다음 단계로' : '다음으로'}
       showFooter={isStageCompleted}
     >
       <div className="space-y-6">
-        {/* 집단 정보 (목업용) */}
+        {/* 집단 정보 */}
         <div className="bg-primary/5 border-2 border-primary/20 rounded-2xl p-6">
           <div className="flex gap-4">
             <Sparkles className="w-7 h-7 text-primary flex-shrink-0" />
             <div>
-              <h3 className="text-xl font-bold mb-2">{groupInfo[MOCK_GROUP].name}</h3>
+              <h3 className="text-xl font-bold mb-2">{groupInfo[groupAssignment].name}</h3>
               <p className="text-base text-muted-foreground">
-                {groupInfo[MOCK_GROUP].description}
+                {groupInfo[groupAssignment].description}
               </p>
-              {MOCK_GROUP !== 'C' && (
+              {groupAssignment !== 'C' && (
                 <p className="text-sm text-primary font-medium mt-2">
                   {currentStage}/3단계: {currentPrompt.title}
                 </p>
@@ -168,14 +316,15 @@ export default function InterventionPage() {
         {!isStageCompleted && (
           <WritingArea
             prompt={currentPrompt.content}
-            durationMinutes={MOCK_GROUP === 'C' ? 10 : currentStage === 3 ? 4 : 3}
+            durationMinutes={groupAssignment === 'C' ? 10 : 3}
             onComplete={handleStageComplete}
             autoSubmit={true}
+            isDevelopment={true}
           />
         )}
 
         {/* GPT 피드백 (A집단만) */}
-        {isStageCompleted && MOCK_GROUP === 'A' && gptFeedback && (
+        {isStageCompleted && groupAssignment === 'A' && (
           <Card className="bg-gradient-to-br from-primary/5 to-accent/5 border-2 border-primary/30 p-8">
             <div className="space-y-4">
               <div className="flex items-center gap-3">
@@ -184,14 +333,23 @@ export default function InterventionPage() {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold">AI 피드백</h3>
-                  <p className="text-sm text-muted-foreground">작성하신 글에 대한 응답입니다</p>
+                  <p className="text-sm text-muted-foreground">
+                    {isLoadingFeedback ? '피드백을 생성하고 있습니다...' : '작성하신 글에 대한 응답입니다'}
+                  </p>
                 </div>
               </div>
 
-              <div className="bg-white/80 rounded-xl p-6 border border-primary/20">
-                <p className="text-lg leading-relaxed text-foreground">
-                  {gptFeedback}
-                </p>
+              <div className="bg-white/80 rounded-xl p-6 border border-primary/20 min-h-[120px]">
+                {isLoadingFeedback && !gptFeedback ? (
+                  <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                  </div>
+                ) : (
+                  <p className="text-lg leading-relaxed text-foreground whitespace-pre-wrap">
+                    {gptFeedback || '피드백을 기다리는 중...'}
+                    {isLoadingFeedback && <span className="inline-block w-2 h-5 bg-primary/50 animate-pulse ml-1"></span>}
+                  </p>
+                )}
               </div>
             </div>
           </Card>

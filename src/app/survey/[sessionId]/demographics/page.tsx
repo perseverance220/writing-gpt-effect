@@ -9,6 +9,13 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Textarea } from '@/components/ui/textarea';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { User } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function DemographicsPage() {
   const router = useRouter();
@@ -98,20 +105,29 @@ export default function DemographicsPage() {
           </div>
         </div>
 
-        {/* 질문 1: 연령 */}
+        {/* 질문 1: 출생연도 */}
         <Card className="border-2 border-border rounded-xl shadow-sm p-5">
           <div className="space-y-3">
-            <Label className="text-lg font-bold block">1. 현재 나이를 선택해주세요</Label>
-            <RadioGroup value={formData.age} onValueChange={(value) => setFormData({ ...formData, age: value })}>
-              <div className="space-y-2">
-                {['60-64세', '65-69세', '70-74세'].map((option) => (
-                  <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
-                    <RadioGroupItem value={option} className="w-6 h-6 flex-shrink-0" />
-                    <span className="text-lg font-medium">{option}</span>
-                  </label>
+            <Label className="text-lg font-bold block">1. 출생연도를 선택해주세요</Label>
+            <p className="text-sm text-muted-foreground">
+              만 60세(1965년생)부터 만 74세(1951년생)까지 선택 가능합니다
+            </p>
+            <Select value={formData.age} onValueChange={(value) => setFormData({ ...formData, age: value })}>
+              <SelectTrigger className="h-14 text-lg border-2">
+                <SelectValue placeholder="출생연도를 선택하세요" />
+              </SelectTrigger>
+              <SelectContent>
+                {Array.from({ length: 15 }, (_, i) => {
+                  const year = 1965 - i; // 1965년생(만 60세)부터 1951년생(만 74세)까지
+                  const age = 2025 - year;
+                  return { year, age };
+                }).map(({ year, age }) => (
+                  <SelectItem key={year} value={`${year}년생`} className="text-lg py-3">
+                    {year}년생 (만 {age}세)
+                  </SelectItem>
                 ))}
-              </div>
-            </RadioGroup>
+              </SelectContent>
+            </Select>
           </div>
         </Card>
 
@@ -119,7 +135,7 @@ export default function DemographicsPage() {
         <Card className="border-2 border-border rounded-xl shadow-sm p-5">
           <div className="space-y-3">
             <Label className="text-lg font-bold block">2. 최종 학력을 선택해주세요</Label>
-            <RadioGroup value={formData.educationLevel} onValueChange={(value) => setFormData({ ...formData, educationLevel: value })}>
+            <RadioGroup value={formData.educationLevel || undefined} onValueChange={(value) => setFormData({ ...formData, educationLevel: value })}>
               <div className="space-y-2">
                 {['초등학교 졸업', '중학교 졸업', '고등학교 졸업', '전문대학 졸업', '대학교 졸업', '대학원 졸업'].map((option) => (
                   <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
@@ -136,7 +152,7 @@ export default function DemographicsPage() {
         <Card className="border-2 border-border rounded-xl shadow-sm p-5">
           <div className="space-y-3">
             <Label className="text-lg font-bold block">3. 현재 결혼 상태를 선택해주세요</Label>
-            <RadioGroup value={formData.maritalStatus} onValueChange={(value) => setFormData({ ...formData, maritalStatus: value })}>
+            <RadioGroup value={formData.maritalStatus || undefined} onValueChange={(value) => setFormData({ ...formData, maritalStatus: value })}>
               <div className="space-y-2">
                 {['기혼', '미혼', '이혼', '사별'].map((option) => (
                   <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
@@ -153,7 +169,7 @@ export default function DemographicsPage() {
         <Card className="border-2 border-border rounded-xl shadow-sm p-5">
           <div className="space-y-3">
             <Label className="text-lg font-bold block">4. 현재 누구와 함께 살고 계신가요?</Label>
-            <RadioGroup value={formData.livingArrangement} onValueChange={(value) => setFormData({ ...formData, livingArrangement: value })}>
+            <RadioGroup value={formData.livingArrangement || undefined} onValueChange={(value) => setFormData({ ...formData, livingArrangement: value })}>
               <div className="space-y-2">
                 {['혼자 살고 있음', '배우자와 함께', '자녀와 함께', '기타 가족과 함께'].map((option) => (
                   <label key={option} className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">

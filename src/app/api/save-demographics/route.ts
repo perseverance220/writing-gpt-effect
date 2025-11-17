@@ -30,11 +30,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 참여자 ID 조회 (UUID 또는 identifier)
+    const isUUID = participantId.length === 36 && participantId.includes('-');
+    let participant;
+
+    if (isUUID) {
+      const { data } = await supabase
+        .from('thesis_participants')
+        .select('id')
+        .eq('id', participantId)
+        .single();
+      participant = data;
+    } else {
+      const { data } = await supabase
+        .from('thesis_participants')
+        .select('id')
+        .eq('identifier', participantId)
+        .single();
+      participant = data;
+    }
+
+    if (!participant) {
+      return NextResponse.json(
+        { success: false, error: '참여자를 찾을 수 없습니다.' },
+        { status: 404 }
+      );
+    }
+
     // 기존 데이터 확인 (이미 입력했는지)
     const { data: existing } = await supabase
       .from('thesis_demographics')
       .select('id')
-      .eq('participant_id', participantId)
+      .eq('participant_id', participant.id)
       .single();
 
     let result;
@@ -50,7 +77,7 @@ export async function POST(request: NextRequest) {
           living_arrangement: livingArrangement,
           main_stressor: mainStressor,
         })
-        .eq('participant_id', participantId)
+        .eq('participant_id', participant.id)
         .select()
         .single();
 
@@ -68,7 +95,7 @@ export async function POST(request: NextRequest) {
       const { data, error } = await supabase
         .from('thesis_demographics')
         .insert({
-          participant_id: participantId,
+          participant_id: participant.id,
           age,
           education_level: educationLevel,
           marital_status: maritalStatus,

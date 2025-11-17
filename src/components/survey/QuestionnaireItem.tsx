@@ -29,7 +29,7 @@ export function QuestionnaireItem({
           {questionNumber}. {questionText}
         </Label>
 
-        <RadioGroup value={value} onValueChange={onChange}>
+        <RadioGroup value={value || undefined} onValueChange={onChange}>
           <div className="space-y-3">
             {options.map((option) => (
               <label key={option.value} className="option-item">

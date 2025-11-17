@@ -20,17 +20,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // PANAS 응답 추출
+    // PANAS 응답 추출 (프론트엔드 키 형식: panas_positive_1, panas_negative_1 등)
     const {
-      panas1, panas2, panas3, panas4, panas5,
-      panas6, panas7, panas8, panas9, panas10
+      panas_positive_1, panas_positive_2, panas_positive_3, panas_positive_4, panas_positive_5,
+      panas_negative_1, panas_negative_2, panas_negative_3, panas_negative_4, panas_negative_5
     } = responses;
 
+    // 모든 응답이 있는지 확인
+    if (!panas_positive_1 || !panas_positive_2 || !panas_positive_3 || !panas_positive_4 || !panas_positive_5 ||
+        !panas_negative_1 || !panas_negative_2 || !panas_negative_3 || !panas_negative_4 || !panas_negative_5) {
+      return NextResponse.json(
+        { success: false, error: '모든 PANAS 문항에 응답해주세요.' },
+        { status: 400 }
+      );
+    }
+
     // PANAS 점수 계산
-    // Positive: panas1, panas3, panas5, panas9, panas10
-    // Negative: panas2, panas4, panas6, panas7, panas8
-    const panas_positive = parseInt(panas1) + parseInt(panas3) + parseInt(panas5) + parseInt(panas9) + parseInt(panas10);
-    const panas_negative = parseInt(panas2) + parseInt(panas4) + parseInt(panas6) + parseInt(panas7) + parseInt(panas8);
+    const panas_positive = parseInt(panas_positive_1) + parseInt(panas_positive_2) + parseInt(panas_positive_3) + parseInt(panas_positive_4) + parseInt(panas_positive_5);
+    const panas_negative = parseInt(panas_negative_1) + parseInt(panas_negative_2) + parseInt(panas_negative_3) + parseInt(panas_negative_4) + parseInt(panas_negative_5);
 
     // 참여자 ID 조회 (UUID 또는 identifier)
     const isUUID = participantId.length === 36 && participantId.includes('-');
@@ -73,16 +80,16 @@ export async function POST(request: NextRequest) {
       const { data, error } = await supabase
         .from('thesis_mid_test_responses')
         .update({
-          panas_positive_1: parseInt(panas1),
-          panas_positive_2: parseInt(panas3),
-          panas_positive_3: parseInt(panas5),
-          panas_positive_4: parseInt(panas9),
-          panas_positive_5: parseInt(panas10),
-          panas_negative_1: parseInt(panas2),
-          panas_negative_2: parseInt(panas4),
-          panas_negative_3: parseInt(panas6),
-          panas_negative_4: parseInt(panas7),
-          panas_negative_5: parseInt(panas8),
+          panas_positive_1: parseInt(panas_positive_1),
+          panas_positive_2: parseInt(panas_positive_2),
+          panas_positive_3: parseInt(panas_positive_3),
+          panas_positive_4: parseInt(panas_positive_4),
+          panas_positive_5: parseInt(panas_positive_5),
+          panas_negative_1: parseInt(panas_negative_1),
+          panas_negative_2: parseInt(panas_negative_2),
+          panas_negative_3: parseInt(panas_negative_3),
+          panas_negative_4: parseInt(panas_negative_4),
+          panas_negative_5: parseInt(panas_negative_5),
           panas_positive_score: panas_positive,
           panas_negative_score: panas_negative,
         })
@@ -105,16 +112,16 @@ export async function POST(request: NextRequest) {
         .from('thesis_mid_test_responses')
         .insert({
           participant_id: participant.id,
-          panas_positive_1: parseInt(panas1),
-          panas_positive_2: parseInt(panas3),
-          panas_positive_3: parseInt(panas5),
-          panas_positive_4: parseInt(panas9),
-          panas_positive_5: parseInt(panas10),
-          panas_negative_1: parseInt(panas2),
-          panas_negative_2: parseInt(panas4),
-          panas_negative_3: parseInt(panas6),
-          panas_negative_4: parseInt(panas7),
-          panas_negative_5: parseInt(panas8),
+          panas_positive_1: parseInt(panas_positive_1),
+          panas_positive_2: parseInt(panas_positive_2),
+          panas_positive_3: parseInt(panas_positive_3),
+          panas_positive_4: parseInt(panas_positive_4),
+          panas_positive_5: parseInt(panas_positive_5),
+          panas_negative_1: parseInt(panas_negative_1),
+          panas_negative_2: parseInt(panas_negative_2),
+          panas_negative_3: parseInt(panas_negative_3),
+          panas_negative_4: parseInt(panas_negative_4),
+          panas_negative_5: parseInt(panas_negative_5),
           panas_positive_score: panas_positive,
           panas_negative_score: panas_negative,
         })

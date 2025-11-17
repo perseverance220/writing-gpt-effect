@@ -139,7 +139,7 @@ export default function MidTestPage() {
           <Alert className="bg-primary/5 border-primary/30">
             <Heart className="h-5 w-5 text-primary" />
             <AlertDescription className="text-base font-medium">
-              모든 문항에 답변하셨습니다. 잠시 쉬어가셔도 좋습니다.
+              모든 문항에 답변하셨습니다.
             </AlertDescription>
           </Alert>
         )}

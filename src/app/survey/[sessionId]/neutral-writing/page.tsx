@@ -19,12 +19,12 @@ export default function NeutralWritingPage() {
 
 어떤 일을 하셨는지, 어디를 가셨는지, 무엇을 드셨는지 등 일상의 모습을 편안하게 적어주시면 됩니다.
 
-**작성 예시:**
+작성 예시:
 • "오늘 아침에는 평소보다 늦게 일어났습니다. 창문을 열어보니 날씨가 맑아서 기분이 좋았습니다."
 • "점심에는 집에서 된장찌개를 끓여 먹었습니다. 저녁에는 산책을 나갔다가 이웃을 만나 인사를 나눴습니다."
 • "오늘은 책을 읽으며 시간을 보냈습니다. 저녁에는 TV에서 뉴스를 봤습니다."
 
-**다음 질문을 참고하여 작성해주세요:**
+다음 질문을 참고하여 작성해주세요:
 • 오늘 어떤 활동을 하셨나요?
 • 어떤 음식을 드셨나요?
 • 누구를 만나셨나요?
@@ -70,7 +70,7 @@ export default function NeutralWritingPage() {
       console.log('Neutral writing saved:', data);
 
       // C 그룹: 중립 글쓰기 후 사후 측정(post-test)으로 이동
-      router.push(`/survey/${sessionId}/post-test`);
+      router.push(`/survey/${sessionId}/post-test/self-compassion`);
 
     } catch (error) {
       console.error('Writing task save error:', error);

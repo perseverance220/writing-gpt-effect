@@ -75,9 +75,13 @@ export async function GET(request: NextRequest) {
     const writingTasks = writingTasksResult.data || [];
 
     const hasNegativeEvent = writingTasks.some(t => t.task_type === 'negative_event');
-    const hasSelfCompassion = writingTasks.some(t =>
-      ['common_humanity', 'self_kindness', 'mindfulness'].includes(t.task_type)
-    );
+
+    // A/B 집단: 3단계 모두 완료해야 함
+    const hasCommonHumanity = writingTasks.some(t => t.task_type === 'common_humanity');
+    const hasSelfKindness = writingTasks.some(t => t.task_type === 'self_kindness');
+    const hasMindfulness = writingTasks.some(t => t.task_type === 'mindfulness');
+    const hasSelfCompassion = hasCommonHumanity && hasSelfKindness && hasMindfulness;
+
     const hasNeutralWriting = writingTasks.some(t => t.task_type === 'neutral');
 
     // 인터뷰 및 결제 정보 확인

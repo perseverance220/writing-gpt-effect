@@ -114,7 +114,7 @@ export default function InterviewPaymentPage() {
               </div>
             </div>
 
-            <RadioGroup value={interviewWilling} onValueChange={setInterviewWilling}>
+            <RadioGroup value={interviewWilling || undefined} onValueChange={setInterviewWilling}>
               <div className="space-y-3">
                 <label className="flex items-start gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
                   <RadioGroupItem value="yes" className="w-6 h-6 flex-shrink-0 mt-0.5" />
