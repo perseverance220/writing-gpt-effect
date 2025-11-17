@@ -114,10 +114,7 @@ export default function CompletePage() {
                   <div>
                     <h3 className="text-lg font-bold mb-2 text-green-800">사례비 지급</h3>
                     <p className="text-base text-green-700 leading-relaxed">
-                      설문 참여 사례비는 <strong>1주일 이내</strong>에 입력하신 정보로 지급됩니다.
-                      {participantData?.paymentMethod === 'bank' && ' (계좌이체)'}
-                      {participantData?.paymentMethod === 'mobile' && ' (모바일 상품권)'}
-                      {participantData?.paymentMethod === 'giftcard' && ' (이메일 상품권)'}
+                      설문 참여 사례비 <strong>10,000원</strong>은 <strong>1주일 이내</strong>에 입력하신 계좌로 지급됩니다.
                     </p>
                   </div>
                 </div>

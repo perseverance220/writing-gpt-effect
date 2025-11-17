@@ -17,16 +17,18 @@ export default function InterviewPaymentPage() {
 
   const [interviewWilling, setInterviewWilling] = useState<string>('');
   const [interviewContact, setInterviewContact] = useState('');
-  const [paymentMethod, setPaymentMethod] = useState<string>('');
-  const [paymentInfo, setPaymentInfo] = useState('');
+  const [accountName, setAccountName] = useState('');
+  const [accountNumber, setAccountNumber] = useState('');
+  const [bankName, setBankName] = useState('');
   const [isSaving, setIsSaving] = useState(false);
   const [error, setError] = useState('');
 
   const isFormComplete =
     interviewWilling !== '' &&
     (interviewWilling === 'no' || interviewContact.trim().length > 0) &&
-    paymentMethod !== '' &&
-    paymentInfo.trim().length > 0;
+    accountName.trim().length > 0 &&
+    bankName.trim().length > 0 &&
+    accountNumber.trim().length > 0;
 
   const handleNext = async () => {
     if (!isFormComplete) return;
@@ -35,6 +37,8 @@ export default function InterviewPaymentPage() {
     setError('');
 
     try {
+      const paymentInfo = `${accountName}|${bankName}|${accountNumber}`;
+
       const response = await fetch('/api/save-interview-payment', {
         method: 'POST',
         headers: {
@@ -44,7 +48,7 @@ export default function InterviewPaymentPage() {
           participantId: sessionId,
           interviewWilling: interviewWilling === 'yes',
           interviewContact: interviewWilling === 'yes' ? interviewContact : null,
-          paymentMethod,
+          paymentMethod: 'bank',
           paymentInfo,
         }),
       });
@@ -151,7 +155,7 @@ export default function InterviewPaymentPage() {
                   사례비 지급 정보
                 </Label>
                 <p className="text-base text-muted-foreground leading-relaxed mb-4">
-                  설문 참여 사례비 <strong>10,000~30,000원</strong>을 지급해드립니다.
+                  설문 참여 사례비 <strong>10,000원</strong>을 지급해드립니다.
                   <br />
                   <strong className="text-primary">본인 명의가 아니어도 괜찮습니다.</strong>
                   <br />
@@ -161,50 +165,48 @@ export default function InterviewPaymentPage() {
             </div>
 
             <div className="space-y-3">
-              <Label className="text-lg font-bold">지급 방법 선택</Label>
-              <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod}>
-                <div className="space-y-2">
-                  <label className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
-                    <RadioGroupItem value="bank" className="w-6 h-6 flex-shrink-0" />
-                    <span className="text-lg font-medium">계좌이체 (본인/타인 명의 무관)</span>
-                  </label>
-                  <label className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
-                    <RadioGroupItem value="mobile" className="w-6 h-6 flex-shrink-0" />
-                    <span className="text-lg font-medium">모바일 상품권 (카카오페이/네이버페이)</span>
-                  </label>
-                  <label className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10">
-                    <RadioGroupItem value="giftcard" className="w-6 h-6 flex-shrink-0" />
-                    <span className="text-lg font-medium">편의점 상품권 (이메일 발송)</span>
-                  </label>
-                </div>
-              </RadioGroup>
-            </div>
-
-            {paymentMethod && (
+              {/* 예금주명 */}
               <div className="space-y-2">
-                <Label className="text-lg font-bold">
-                  {paymentMethod === 'bank' && '계좌번호'}
-                  {paymentMethod === 'mobile' && '휴대폰 번호'}
-                  {paymentMethod === 'giftcard' && '이메일 주소'}
-                </Label>
+                <Label className="text-lg font-bold">예금주명</Label>
                 <Input
                   type="text"
-                  placeholder={
-                    paymentMethod === 'bank' ? '예: 국민은행 123-456-789012' :
-                    paymentMethod === 'mobile' ? '예: 010-1234-5678' :
-                    '예: example@email.com'
-                  }
-                  value={paymentInfo}
-                  onChange={(e) => setPaymentInfo(e.target.value)}
+                  placeholder="예: 홍길동"
+                  value={accountName}
+                  onChange={(e) => setAccountName(e.target.value)}
                   className="h-14 text-lg border-2"
                 />
                 <p className="text-sm text-muted-foreground">
-                  {paymentMethod === 'bank' && '은행명과 계좌번호를 입력해주세요 (타인 명의 가능)'}
-                  {paymentMethod === 'mobile' && '모바일 상품권을 받으실 휴대폰 번호를 입력해주세요'}
-                  {paymentMethod === 'giftcard' && '상품권 코드를 받으실 이메일 주소를 입력해주세요'}
+                  타인 명의도 가능합니다 (예: 자녀 이름)
                 </p>
               </div>
-            )}
+
+              {/* 은행명 */}
+              <div className="space-y-2">
+                <Label className="text-lg font-bold">은행명</Label>
+                <Input
+                  type="text"
+                  placeholder="예: 국민은행"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="h-14 text-lg border-2"
+                />
+              </div>
+
+              {/* 계좌번호 */}
+              <div className="space-y-2">
+                <Label className="text-lg font-bold">계좌번호</Label>
+                <Input
+                  type="text"
+                  placeholder="예: 123-456-789012"
+                  value={accountNumber}
+                  onChange={(e) => setAccountNumber(e.target.value)}
+                  className="h-14 text-lg border-2"
+                />
+                <p className="text-sm text-muted-foreground">
+                  하이픈(-) 포함 또는 제외 모두 가능합니다
+                </p>
+              </div>
+            </div>
           </div>
         </Card>
 
