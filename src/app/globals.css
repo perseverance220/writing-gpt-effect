@@ -82,6 +82,13 @@
   button, a {
     @apply min-h-[48px];
   }
+
+  /* Select 드롭다운 모바일 최적화 */
+  [data-radix-select-content] {
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    touch-action: pan-y;
+  }
 }
 
 @layer components {

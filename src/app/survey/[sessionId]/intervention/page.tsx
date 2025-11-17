@@ -90,11 +90,11 @@ export default function InterventionPage() {
       },
       {
         title: '마음챙김 (Mindfulness)',
-        content: `지금 이 순간의 감정을 있는 그대로 관찰해보세요.
+        content: `앞서 떠올린 그 사건을 생각했을 때, 지금 이 순간 느껴지는 감정을 있는 그대로 관찰해보세요.
 
 판단하지 말고, 그저 느끼고 인정해주세요.
 
-• 지금 어떤 감정이 드시나요?
+• 그 사건을 떠올리면 지금 어떤 감정이 드시나요?
 • 그 감정을 억누르지 말고, 있는 그대로 느껴보세요
 • 모든 감정은 자연스러운 것입니다`,
       },
@@ -122,11 +122,11 @@ export default function InterventionPage() {
       },
       {
         title: '마음챙김',
-        content: `지금 이 순간의 감정을 있는 그대로 관찰해보세요.
+        content: `앞서 떠올린 그 사건을 생각했을 때, 지금 이 순간 느껴지는 감정을 있는 그대로 관찰해보세요.
 
 판단하지 말고, 그저 느끼고 인정해주세요.
 
-• 지금 어떤 감정이 드시나요?
+• 그 사건을 떠올리면 지금 어떤 감정이 드시나요?
 • 그 감정을 억누르지 말고, 있는 그대로 느껴보세요
 • 모든 감정은 자연스러운 것입니다`,
       },
@@ -332,9 +332,9 @@ export default function InterventionPage() {
                   <MessageCircle className="w-6 h-6 text-primary" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold">AI 피드백</h3>
+                  <h3 className="text-xl font-bold">AI 분석 결과</h3>
                   <p className="text-sm text-muted-foreground">
-                    {isLoadingFeedback ? '피드백을 생성하고 있습니다...' : '작성하신 글에 대한 응답입니다'}
+                    {isLoadingFeedback ? 'AI 분석 결과를 생성하고 있습니다...' : 'AI 분석 결과를 확인하고 다음 화면으로 넘어가주세요'}
                   </p>
                 </div>
               </div>
