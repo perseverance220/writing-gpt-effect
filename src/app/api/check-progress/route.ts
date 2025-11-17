@@ -24,7 +24,7 @@ export async function GET(request: NextRequest) {
       // UUID로 조회
       const result = await supabase
         .from('thesis_participants')
-        .select('id, identifier, group_assignment, status')
+        .select('id, identifier, group_assignment, status, payment_method, payment_info, interview_willing')
         .eq('id', participantId)
         .single();
       participant = result.data;
@@ -33,7 +33,7 @@ export async function GET(request: NextRequest) {
       // identifier(6자리 코드)로 조회
       const result = await supabase
         .from('thesis_participants')
-        .select('id, identifier, group_assignment, status')
+        .select('id, identifier, group_assignment, status, payment_method, payment_info, interview_willing')
         .eq('identifier', participantId)
         .single();
       participant = result.data;
@@ -48,18 +48,30 @@ export async function GET(request: NextRequest) {
     }
 
     // 각 단계 완료 여부 확인
-    const [consentResult, demographicsResult, preTestResult, midTestResult, writingTasksResult] = await Promise.all([
+    const [
+      consentResult,
+      demographicsResult,
+      preTestResult,
+      midTestResult,
+      writingTasksResult,
+      postTestResult,
+      qualitativeResult,
+    ] = await Promise.all([
       supabase.from('thesis_consent').select('id').eq('participant_id', participant.id).single(),
       supabase.from('thesis_demographics').select('id').eq('participant_id', participant.id).single(),
       supabase.from('thesis_pre_test_responses').select('id').eq('participant_id', participant.id).single(),
       supabase.from('thesis_mid_test_responses').select('id').eq('participant_id', participant.id).single(),
       supabase.from('thesis_writing_tasks').select('task_type').eq('participant_id', participant.id),
+      supabase.from('thesis_post_test_responses').select('id').eq('participant_id', participant.id).single(),
+      supabase.from('thesis_descriptive_responses').select('id').eq('participant_id', participant.id).single(),
     ]);
 
     const hasConsent = !!consentResult.data;
     const hasDemographics = !!demographicsResult.data;
     const hasPreTest = !!preTestResult.data;
     const hasMidTest = !!midTestResult.data;
+    const hasPostTest = !!postTestResult.data;
+    const hasQualitative = !!qualitativeResult.data;
     const writingTasks = writingTasksResult.data || [];
 
     const hasNegativeEvent = writingTasks.some(t => t.task_type === 'negative_event');
@@ -67,6 +79,9 @@ export async function GET(request: NextRequest) {
       ['common_humanity', 'self_kindness', 'mindfulness'].includes(t.task_type)
     );
     const hasNeutralWriting = writingTasks.some(t => t.task_type === 'neutral');
+
+    // 인터뷰 및 결제 정보 확인
+    const hasInterviewPayment = participant.payment_method && participant.payment_info;
 
     // 다음에 진행해야 할 페이지 결정
     let nextStep = '/consent';
@@ -86,9 +101,18 @@ export async function GET(request: NextRequest) {
       nextStep = '/neutral-writing';
     } else if (['A', 'B'].includes(participant.group_assignment) && !hasSelfCompassion) {
       nextStep = '/intervention';
+    } else if (!hasPostTest) {
+      // 중재 완료 후 사후 검사
+      nextStep = '/post-test/self-compassion';
+    } else if (!hasQualitative) {
+      // 사후 검사 완료 후 서술형 질문
+      nextStep = '/post-test/qualitative';
+    } else if (!hasInterviewPayment) {
+      // 서술형 완료 후 인터뷰 및 결제 정보
+      nextStep = '/post-test/interview-payment';
     } else {
       // 모든 단계 완료 시
-      nextStep = '/post-test';
+      nextStep = '/post-test/complete';
     }
 
     return NextResponse.json({
@@ -105,6 +129,9 @@ export async function GET(request: NextRequest) {
           hasMidTest,
           hasSelfCompassion,
           hasNeutralWriting,
+          hasPostTest,
+          hasQualitative,
+          hasInterviewPayment,
         },
         nextStep,
       },

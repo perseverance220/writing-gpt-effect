@@ -15,7 +15,9 @@
       "Bash(cat:*)",
       "Bash(claude mcp add:*)",
       "Bash(claude mcp list:*)",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nAdd mid-test flow and neutral-writing for complete research protocol\n\nImplemented missing mid-test (PANAS) measurement step and neutral-writing page for control group.\n\n**Key Features:**\n- Mid-test PANAS measurement after negative-event recall\n- Neutral-writing page for C group (control condition)\n- Group-based routing: A/B→intervention, C→neutral-writing\n- Progress tracking with automatic resume from last incomplete step\n- Complete API integration for all survey steps\n\n**Technical Changes:**\n- Created save-mid-test API with UPSERT pattern\n- Created save-writing-task API for all writing tasks\n- Updated check-progress API to handle UUID/identifier and mid-test flow\n- Added RLS policies for mid-test and writing tasks tables\n- Implemented participant verification with progress resume\n\n**Research Flow:**\nconsent → demographics → pre-test → negative-event → **mid-test** → \n[A/B: intervention | C: neutral-writing] → post-test\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(git push:*)"
     ],
     "deny": [],
     "ask": []
