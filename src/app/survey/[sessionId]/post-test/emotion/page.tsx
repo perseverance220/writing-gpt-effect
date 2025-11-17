@@ -93,7 +93,7 @@ export default function PostTestEmotionPage() {
             <Card key={question.id} className="border-2 border-border rounded-xl shadow-sm p-5">
               <div className="space-y-3">
                 <Label className="text-lg font-bold block">
-                  {index + 1}. 지금 현재 <span className="text-primary">"{question.text}"</span> 느낌이 드시나요?
+                  {index + 1}. 지금 현재 <span className="text-primary">&ldquo;{question.text}&rdquo;</span> 느낌이 드시나요?
                 </Label>
                 <RadioGroup
                   value={responses[question.id]}
