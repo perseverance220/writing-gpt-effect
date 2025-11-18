@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { SurveyLayout } from '@/components/layout/SurveyLayout';
 import { Card } from '@/components/ui/card';
@@ -39,6 +39,20 @@ export default function PostTestSelfCompassionPage() {
   const sessionId = params.sessionId as string;
 
   const [responses, setResponses] = useState<Record<string, string>>({});
+
+  // 페이지 로드 시 localStorage에서 응답 복원
+  useEffect(() => {
+    const savedResponses = localStorage.getItem(`posttest_scs_${sessionId}`);
+    if (savedResponses) {
+      try {
+        const parsed = JSON.parse(savedResponses);
+        setResponses(parsed);
+        console.log('[post-test/scs] Restored responses from localStorage');
+      } catch (error) {
+        console.error('[post-test/scs] Failed to parse saved responses:', error);
+      }
+    }
+  }, [sessionId]);
 
   const isFormComplete = scsQuestions.every((q) => responses[q.id]);
 
