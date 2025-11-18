@@ -30,6 +30,18 @@ export default function InterventionPage() {
   // B집단: 3단계 (피드백 없음)
   // C집단: 1단계 (중립적 글쓰기)
 
+  // 페이지 로드 시 저장된 진행 상태 복원
+  useEffect(() => {
+    const savedStage = localStorage.getItem(`intervention_stage_${sessionId}`);
+    if (savedStage) {
+      const stage = parseInt(savedStage, 10);
+      if (stage > 1) {
+        setCurrentStage(stage);
+        console.log(`[intervention] Restored stage ${stage} from localStorage`);
+      }
+    }
+  }, [sessionId]);
+
   // 참여자 그룹 정보 가져오기
   useEffect(() => {
     const fetchGroupAssignment = async () => {
@@ -270,10 +282,17 @@ export default function InterventionPage() {
 
   const handleNextStage = () => {
     if (currentStage < totalStages) {
-      setCurrentStage(currentStage + 1);
+      const nextStage = currentStage + 1;
+      setCurrentStage(nextStage);
       setIsStageCompleted(false);
       setGptFeedback('');
+      // 다음 단계로 이동 시 localStorage에 저장
+      localStorage.setItem(`intervention_stage_${sessionId}`, nextStage.toString());
+      console.log(`[intervention] Saved stage ${nextStage} to localStorage`);
     } else {
+      // 모든 단계 완료 시 localStorage 정리
+      localStorage.removeItem(`intervention_stage_${sessionId}`);
+      console.log(`[intervention] All stages completed, cleared localStorage`);
       router.push(`/survey/${sessionId}/post-test/self-compassion`);
     }
   };
