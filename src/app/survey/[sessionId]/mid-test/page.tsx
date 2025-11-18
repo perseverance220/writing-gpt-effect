@@ -126,7 +126,7 @@ export default function MidTestPage() {
             <QuestionnaireItem
               key={question.id}
               questionNumber={index + 1}
-              questionText={question.text}
+              questionText={`지금 현재 "${question.text}" 느낌이 드시나요?`}
               value={panasResponses[question.id] || ''}
               onChange={(value) => setPanasResponses({ ...panasResponses, [question.id]: value })}
               options={PANAS_OPTIONS}

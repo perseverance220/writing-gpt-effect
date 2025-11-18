@@ -10,13 +10,13 @@ import { Smile } from 'lucide-react';
 
 // PANAS-SF-10 문항 (Positive and Negative Affect Schedule - Short Form)
 const panasQuestions = [
-  { id: 'panas1', text: '흥미진진한', type: 'positive' },
+  { id: 'panas1', text: '흥미로운', type: 'positive' },
   { id: 'panas2', text: '괴로운', type: 'negative' },
   { id: 'panas3', text: '신나는', type: 'positive' },
   { id: 'panas4', text: '마음이 상한', type: 'negative' },
-  { id: 'panas5', text: '강한', type: 'positive' },
-  { id: 'panas6', text: '죄책감 드는', type: 'negative' },
-  { id: 'panas7', text: '겁에 질린', type: 'negative' },
+  { id: 'panas5', text: '기운이 나는', type: 'positive' },
+  { id: 'panas6', text: '죄책감이 드는', type: 'negative' },
+  { id: 'panas7', text: '겁이 나는', type: 'negative' },
   { id: 'panas8', text: '적대적인', type: 'negative' },
   { id: 'panas9', text: '열정적인', type: 'positive' },
   { id: 'panas10', text: '자랑스러운', type: 'positive' },
@@ -24,9 +24,9 @@ const panasQuestions = [
 
 const scaleOptions = [
   { value: '1', label: '전혀 아니다' },
-  { value: '2', label: '아니다' },
+  { value: '2', label: '조금 그렇다' },
   { value: '3', label: '보통이다' },
-  { value: '4', label: '그렇다' },
+  { value: '4', label: '상당히 그렇다' },
   { value: '5', label: '매우 그렇다' },
 ];
 
