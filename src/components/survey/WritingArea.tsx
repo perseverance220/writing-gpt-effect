@@ -32,6 +32,7 @@ export function WritingArea({
   const startTimeRef = useRef<number>(0);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const contentRef = useRef<string>('');
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const totalSeconds = durationMinutes * 60;
   const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
@@ -46,6 +47,24 @@ export function WritingArea({
   useEffect(() => {
     contentRef.current = content;
   }, [content]);
+
+  // 글쓰기 중일 때 입력 위치로 자동 스크롤
+  useEffect(() => {
+    if (isStarted && !isCompleted && textareaRef.current) {
+      // textarea의 커서 위치가 화면에 보이도록 스크롤
+      const textarea = textareaRef.current;
+      const rect = textarea.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+
+      // textarea가 화면 아래쪽에 있거나 보이지 않으면 스크롤
+      if (rect.bottom > viewportHeight - 100 || rect.top < 100) {
+        textarea.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+  }, [content, isStarted, isCompleted]);
 
   // Effect 1: 글쓰기 시작 감지 (content가 변경될 때만)
   useEffect(() => {
@@ -187,6 +206,7 @@ export function WritingArea({
       {/* 글쓰기 영역 */}
       <Card className="p-6">
         <Textarea
+          ref={textareaRef}
           value={content}
           onChange={(e) => setContent(e.target.value)}
           placeholder={placeholder}
