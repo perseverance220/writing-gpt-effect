@@ -289,6 +289,9 @@ export default function InterventionPage() {
       // 다음 단계로 이동 시 localStorage에 저장
       localStorage.setItem(`intervention_stage_${sessionId}`, nextStage.toString());
       console.log(`[intervention] Saved stage ${nextStage} to localStorage`);
+
+      // 페이지 상단으로 스크롤
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     } else {
       // 모든 단계 완료 시 localStorage 정리
       localStorage.removeItem(`intervention_stage_${sessionId}`);
