@@ -55,7 +55,7 @@ export default function PreTestPage() {
   return (
     <SurveyLayout
       currentStep={3}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="사전 검사"
       onNext={handleNext}
       isNextDisabled={!isFormComplete}

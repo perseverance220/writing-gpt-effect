@@ -106,7 +106,7 @@ export default function ConsentPage() {
   return (
     <SurveyLayout
       currentStep={1}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="연구 참여 동의"
       onNext={handleNext}
       isNextDisabled={!allAgreed || isSaving}

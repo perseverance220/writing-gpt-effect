@@ -287,7 +287,7 @@ export default function InterventionPage() {
   return (
     <SurveyLayout
       currentStep={6}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle={`글쓰기 활동 (${currentStage}/${totalStages})`}
       onNext={isStageCompleted && !isLoadingFeedback ? handleNextStage : undefined}
       nextLabel={currentStage < totalStages ? '다음 단계로' : '다음으로'}

@@ -85,7 +85,7 @@ export default function DemographicsPage() {
   return (
     <SurveyLayout
       currentStep={2}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="기본 정보"
       onNext={handleNext}
       isNextDisabled={!isFormComplete || isSaving}
