@@ -11,23 +11,23 @@ import { AlertCircle } from 'lucide-react';
 
 // GAS-10 문항 (Geriatric Anxiety Scale - 10 items)
 const gasQuestions = [
-  { id: 'gas1', text: '사소한 일에도 걱정이 됩니다' },
-  { id: 'gas2', text: '긴장되거나 불안합니다' },
-  { id: 'gas3', text: '많은 상황들이 불안을 일으킵니다' },
-  { id: 'gas4', text: '쉽게 짜증이 나거나 화가 납니다' },
-  { id: 'gas5', text: '나쁜 일이 일어날 것 같은 두려움을 느낍니다' },
-  { id: 'gas6', text: '걱정 때문에 편안함을 느끼기 어렵습니다' },
-  { id: 'gas7', text: '두근거림이나 심장이 빨리 뛰는 것을 느낍니다' },
-  { id: 'gas8', text: '걱정 때문에 일을 끝내기가 어렵습니다' },
-  { id: 'gas9', text: '안절부절 못하여 가만히 있기가 어렵습니다' },
-  { id: 'gas10', text: '신경이 곤두서 있고 긴장되어 있습니다' },
+  { id: 'gas1', text: '저는 쉽게 짜증이 났습니다.' },
+  { id: 'gas2', text: '저는 다른 사람들과 단절되거나 고립된 느낌이 들었습니다.' },
+  { id: 'gas3', text: '저는 멍한 느낌이 들었습니다.' },
+  { id: 'gas4', text: '저는 가만히 앉아 있기 어려웠습니다.' },
+  { id: 'gas5', text: '저는 제 걱정을 스스로 통제할 수 없었습니다.' },
+  { id: 'gas6', text: '저는 안절부절하거나 예민하고 불안정한 느낌이 들었습니다.' },
+  { id: 'gas7', text: '저는 쉽게 피곤함을 느꼈습니다.' },
+  { id: 'gas8', text: '저는 근육이 긴장되는 느낌이 들었습니다.' },
+  { id: 'gas9', text: '저는 제 삶을 통제할 수 없다는 느낌이 들었습니다.' },
+  { id: 'gas10', text: '저는 무언가 끔찍한 일이 일어날 것 같은 느낌이 들었습니다.' },
 ];
 
 const scaleOptions = [
   { value: '0', label: '전혀 아니다' },
-  { value: '1', label: '거의 아니다' },
-  { value: '2', label: '가끔 그렇다' },
-  { value: '3', label: '자주 그렇다' },
+  { value: '1', label: '가끔 그렇다' },
+  { value: '2', label: '대부분 그렇다' },
+  { value: '3', label: '항상 그렇다' },
 ];
 
 export default function AnxietyPage() {

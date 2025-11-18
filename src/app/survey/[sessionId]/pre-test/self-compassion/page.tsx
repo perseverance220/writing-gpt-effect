@@ -9,27 +9,34 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Heart } from 'lucide-react';
 
 // SCS-SF-12 문항 (Self-Compassion Scale - Short Form 12 items)
+// Scoring Key:
+// Self-Kindness (정채점): 2, 6
+// Self-Judgment (역채점): 11, 12
+// Common Humanity (정채점): 5, 10
+// Isolation (역채점): 4, 8
+// Mindfulness (정채점): 3, 7
+// Over-identification (역채점): 1, 9
 const scsQuestions = [
-  { id: 'scs1', text: '내가 실패했을 때, 나의 부족한 점에 대해 비난하는 경향이 있다', reverse: true },
-  { id: 'scs2', text: '기분이 안 좋을 때, 잘못된 모든 것에 집착하는 경향이 있다', reverse: true },
-  { id: 'scs3', text: '일이 잘 안 풀릴 때, 이런 어려움은 누구나 겪는 삶의 일부분이라고 본다', reverse: false },
-  { id: 'scs4', text: '내 성격 중 마음에 들지 않는 부분에 대해 비판적이고 판단하는 태도를 취한다', reverse: true },
-  { id: 'scs5', text: '정말 힘든 시기를 겪을 때, 내게 필요한 돌봄과 다정함을 준다', reverse: false },
-  { id: 'scs6', text: '기분이 처질 때, 잘못된 모든 것에 대해 감정적으로 반응하는 경향이 있다', reverse: true },
-  { id: 'scs7', text: '실패를 느낄 때, 대부분의 사람들도 실패감을 느낄 것이라고 생각한다', reverse: false },
-  { id: 'scs8', text: '정말 힘들 때, 나 자신에게 냉담한 경향이 있다', reverse: true },
-  { id: 'scs9', text: '무언가로 인해 기분이 상하거나 화가 날 때, 감정의 균형을 유지하려 노력한다', reverse: false },
-  { id: 'scs10', text: '내가 부족하다고 느낄 때, 다른 대부분의 사람들도 부족함을 느낄 것이라 생각한다', reverse: false },
-  { id: 'scs11', text: '나에게 중요한 일에서 실패하면, 혼자라는 느낌에 사로잡힌다', reverse: true },
-  { id: 'scs12', text: '고통스러운 일이 일어났을 때, 그 상황에 대해 균형 잡힌 시각을 가지려 노력한다', reverse: false },
+  { id: 'scs1', text: '나는 나에게 중요한 어떤 일에서 실패를 하면, 내 능력이 부족하다는 느낌에 사로잡힌다', reverse: true }, // Over-identification
+  { id: 'scs2', text: '내 성격 중에서 마음에 들지 않는 부분에 대해 이해하고 견디어내려고 한다.', reverse: false }, // Self-Kindness
+  { id: 'scs3', text: '나는 뭔가 고통스러운 일이 생기면. 그 상황에 대해 균형 잡힌 시각을 가지려고 노력한다.', reverse: false }, // Mindfulness
+  { id: 'scs4', text: '나는 기분이 쳐져 있을 때, 대부분의 다른 사람들은 나보다 더 행복할 거라고 느끼는 경향이 있다.', reverse: true }, // Isolation
+  { id: 'scs5', text: '나는 내가 겪은 실패들에 대해서 사람이라면 누구나 겪을 수 있는 일로 보려고 노력한다.', reverse: false }, // Common Humanity
+  { id: 'scs6', text: '나는 정말로 힘든 시기를 겪을 때, 내게 필요한 돌봄과 부드러움으로 나를 대한다.', reverse: false }, // Self-Kindness
+  { id: 'scs7', text: '나는 어떤 일 때문에 마음이 상하거나 화가 날 때는, 감정의 평정을 유지하려고 노력한다.', reverse: false }, // Mindfulness
+  { id: 'scs8', text: '나는 중요한 어떤 일에서 실패하면, 나 혼자만 실패한 기분이 든다.', reverse: true }, // Isolation
+  { id: 'scs9', text: '나는 기분이 처질 때, 잘못된 모든 일을 강박적으로 떠올리며 집착하는 경향이 있다.', reverse: true }, // Over-identification
+  { id: 'scs10', text: '나는 뭔가 부족한 느낌이 들면, 대부분의 다른 사람들도 그러한 부족감을 느낄 거라는 생각을 떠올리려고 애를 쓴다.', reverse: false }, // Common Humanity
+  { id: 'scs11', text: '나는 내 자신의 결점과 부족한 부분을 못마땅하게 여기고 비난하는 편이다.', reverse: true }, // Self-Judgment
+  { id: 'scs12', text: '나는 내 성격 중에서 마음에 들지 않는 점을 견디거나 참기 어렵다.', reverse: true }, // Self-Judgment
 ];
 
 const scaleOptions = [
-  { value: '1', label: '전혀 아니다' },
-  { value: '2', label: '아니다' },
-  { value: '3', label: '보통이다' },
-  { value: '4', label: '그렇다' },
-  { value: '5', label: '매우 그렇다' },
+  { value: '1', label: '거의 아니다' },
+  { value: '2', label: '조금 그렇다' },
+  { value: '3', label: '웬만큼 그렇다' },
+  { value: '4', label: '자주 그렇다' },
+  { value: '5', label: '거의 항상 그렇다' },
 ];
 
 export default function SelfCompassionPage() {
