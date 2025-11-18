@@ -27,18 +27,23 @@ export async function POST(request: NextRequest) {
     }
 
     // SCS 점수 계산 (역채점 문항 처리)
-    const reverseItems = [1, 2, 4, 6, 8, 11]; // 역채점 문항
-    let scsTotal = 0;
+    // 역채점: 1, 4, 8, 9, 11, 12
+    // Over-identification: 1, 9 / Isolation: 4, 8 / Self-Judgment: 11, 12
+    const reverseItems = [1, 4, 8, 9, 11, 12]; // 역채점 문항
+    let scsSum = 0;
 
     for (let i = 1; i <= 12; i++) {
       const value = parseInt(responses[`scs${i}`]);
       if (reverseItems.includes(i)) {
         // 역채점: 1→5, 2→4, 3→3, 4→2, 5→1
-        scsTotal += (6 - value);
+        scsSum += (6 - value);
       } else {
-        scsTotal += value;
+        scsSum += value;
       }
     }
+
+    // SCS 평균 점수 계산 (1-5점 범위)
+    const scsTotal = scsSum / 12;
 
     // PANAS 점수 계산
     const panasPositiveItems = [1, 3, 5, 9, 10];

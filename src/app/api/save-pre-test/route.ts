@@ -31,22 +31,23 @@ export async function POST(request: NextRequest) {
     } = responses;
 
     // SCS 점수 계산 (역채점 항목 고려)
-    // 역채점: scs1, scs2, scs4, scs6, scs8, scs11
+    // 역채점: scs1, scs4, scs8, scs9, scs11, scs12
+    // Over-identification: 1, 9 / Isolation: 4, 8 / Self-Judgment: 11, 12
     const reverseScore = (score: number) => 6 - score;
 
     const scs_total = (
-      reverseScore(parseInt(scs1)) +
-      reverseScore(parseInt(scs2)) +
+      reverseScore(parseInt(scs1)) +   // 역채점
+      parseInt(scs2) +
       parseInt(scs3) +
-      reverseScore(parseInt(scs4)) +
+      reverseScore(parseInt(scs4)) +   // 역채점
       parseInt(scs5) +
-      reverseScore(parseInt(scs6)) +
+      parseInt(scs6) +
       parseInt(scs7) +
-      reverseScore(parseInt(scs8)) +
-      parseInt(scs9) +
+      reverseScore(parseInt(scs8)) +   // 역채점
+      reverseScore(parseInt(scs9)) +   // 역채점
       parseInt(scs10) +
-      reverseScore(parseInt(scs11)) +
-      parseInt(scs12)
+      reverseScore(parseInt(scs11)) +  // 역채점
+      reverseScore(parseInt(scs12))    // 역채점
     ) / 12;
 
     // PANAS 점수 계산
