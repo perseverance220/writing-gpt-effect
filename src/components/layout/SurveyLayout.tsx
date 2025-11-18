@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { SurveyHeader } from './SurveyHeader';
 import { SurveyProgress } from './SurveyProgress';
 import { SurveyFooter } from './SurveyFooter';
@@ -30,6 +30,11 @@ export function SurveyLayout({
   showPrev = false,
   showFooter = true,
 }: SurveyLayoutProps) {
+  // 페이지 로드 시 최상단으로 스크롤
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentStep]); // currentStep이 바뀔 때마다 실행
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <SurveyHeader />

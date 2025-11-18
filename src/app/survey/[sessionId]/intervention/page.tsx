@@ -56,7 +56,7 @@ export default function InterventionPage() {
 
   if (isLoading || !groupAssignment) {
     return (
-      <SurveyLayout currentStep={6} totalSteps={10} stepTitle="글쓰기 활동">
+      <SurveyLayout currentStep={8} totalSteps={13} stepTitle="글쓰기 활동">
         <div className="flex items-center justify-center py-12">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
         </div>

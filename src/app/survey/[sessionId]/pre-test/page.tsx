@@ -103,7 +103,7 @@ export default function PreTestPage() {
         {/* PANAS-SF-10 섹션 */}
         <div className="space-y-6">
           <div className="bg-primary/5 border-l-4 border-primary p-5 rounded-lg">
-            <h3 className="text-xl font-bold mb-2">Part 2. 정서 척도 (10문항)</h3>
+            <h3 className="text-xl font-bold mb-2">Part 2. 정서 상태 (10문항)</h3>
             <p className="text-base text-muted-foreground">
               <strong>현재 또는 최근</strong> 다음과 같은 감정을 얼마나 느끼고 계신지 답변해주세요.
             </p>

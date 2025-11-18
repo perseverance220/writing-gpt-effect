@@ -51,7 +51,7 @@ export default function EmotionPage() {
   return (
     <SurveyLayout
       currentStep={4}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="사전 검사 (2/3)"
       onNext={handleNext}
       isNextDisabled={!isFormComplete}

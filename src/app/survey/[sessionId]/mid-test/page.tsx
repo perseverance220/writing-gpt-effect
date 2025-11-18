@@ -88,9 +88,9 @@ export default function MidTestPage() {
 
   return (
     <SurveyLayout
-      currentStep={6}
-      totalSteps={10}
-      stepTitle="중간 측정"
+      currentStep={7}
+      totalSteps={13}
+      stepTitle="중간 검사"
       onNext={handleNext}
       isNextDisabled={!isFormComplete || isSaving}
       nextLabel={isSaving ? "저장 중..." : "다음"}
@@ -116,7 +116,7 @@ export default function MidTestPage() {
         {/* PANAS 질문들 */}
         <div className="space-y-6">
           <div className="bg-primary/5 border-l-4 border-primary p-5 rounded-lg">
-            <h3 className="text-xl font-bold mb-2">정서 척도 (10문항)</h3>
+            <h3 className="text-xl font-bold mb-2">정서 상태 검사 (10문항)</h3>
             <p className="text-base text-muted-foreground">
               <strong>지금 이 순간</strong> 다음과 같은 감정을 얼마나 느끼고 계신지 답변해주세요.
             </p>

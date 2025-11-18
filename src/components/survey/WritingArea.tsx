@@ -48,23 +48,29 @@ export function WritingArea({
     contentRef.current = content;
   }, [content]);
 
-  // 글쓰기 중일 때 입력 위치로 자동 스크롤
+  // 글쓰기 시작 시 textarea를 화면 상단에 보이도록 스크롤
   useEffect(() => {
     if (isStarted && !isCompleted && textareaRef.current) {
-      // textarea의 커서 위치가 화면에 보이도록 스크롤
+      // 글쓰기 시작 직후에만 한 번 스크롤
       const textarea = textareaRef.current;
-      const rect = textarea.getBoundingClientRect();
-      const viewportHeight = window.innerHeight;
 
-      // textarea가 화면 아래쪽에 있거나 보이지 않으면 스크롤
-      if (rect.bottom > viewportHeight - 100 || rect.top < 100) {
-        textarea.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
+      // 헤더를 피해서 적절한 위치에 표시 (상단에서 120px 정도 여유)
+      textarea.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start',
+        inline: 'nearest'
+      });
+
+      // 추가로 약간 위로 스크롤하여 헤더가 가리지 않도록 조정
+      setTimeout(() => {
+        const currentScroll = window.scrollY;
+        window.scrollTo({
+          top: Math.max(0, currentScroll - 120),
+          behavior: 'smooth'
         });
-      }
+      }, 100);
     }
-  }, [content, isStarted, isCompleted]);
+  }, [isStarted, isCompleted]); // content 의존성 제거 - 시작 시 한 번만 실행
 
   // Effect 1: 글쓰기 시작 감지 (content가 변경될 때만)
   useEffect(() => {

@@ -87,7 +87,7 @@ export default function NegativeEventPage() {
 
       console.log('Negative event writing saved:', data);
 
-      // 모든 그룹 공통: 중간 측정(mid-test)으로 이동
+      // 모든 그룹 공통: 중간 검사(mid-test)로 이동
       router.push(`/survey/${sessionId}/mid-test`);
 
     } catch (error) {
@@ -99,8 +99,8 @@ export default function NegativeEventPage() {
 
   return (
     <SurveyLayout
-      currentStep={4}
-      totalSteps={10}
+      currentStep={6}
+      totalSteps={13}
       stepTitle="부정적 경험 회상"
       onNext={isCompleted ? handleNext : undefined}
       nextLabel={isSaving ? "저장 중..." : "다음으로"}

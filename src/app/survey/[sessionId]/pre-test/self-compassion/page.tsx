@@ -60,7 +60,7 @@ export default function SelfCompassionPage() {
   return (
     <SurveyLayout
       currentStep={3}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="사전 검사 (1/3)"
       onNext={handleNext}
       isNextDisabled={!isFormComplete}

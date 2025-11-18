@@ -106,7 +106,7 @@ export default function AnxietyPage() {
   return (
     <SurveyLayout
       currentStep={5}
-      totalSteps={10}
+      totalSteps={13}
       stepTitle="사전 검사 (3/3)"
       onNext={handleNext}
       isNextDisabled={!isFormComplete || isSaving}
