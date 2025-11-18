@@ -53,7 +53,7 @@ export default function PostTestSelfCompassionPage() {
 
   return (
     <SurveyLayout
-      currentStep={8}
+      currentStep={9}
       totalSteps={13}
       stepTitle="사후 검사 (1/3)"
       onNext={handleNext}

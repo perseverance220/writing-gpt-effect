@@ -81,7 +81,7 @@ export default function NeutralWritingPage() {
 
   return (
     <SurveyLayout
-      currentStep={7}
+      currentStep={8}
       totalSteps={13}
       stepTitle="일상 글쓰기"
       onNext={isCompleted ? handleNext : undefined}

@@ -24,7 +24,9 @@
       "Bash(git commit -m \"$(cat <<''EOF''\nAdd admin dashboard and fix TypeScript build errors\n\nImplemented comprehensive admin dashboard for research participant management and resolved all TypeScript type errors.\n\n**Key Features:**\n- Admin authentication and dashboard interface\n- Real-time participant data monitoring with expandable details\n- Statistics cards showing total, completed, in-progress, and group distribution\n- CSV export functionality for data analysis\n- Detailed view of demographics, test scores, writing tasks, and qualitative responses\n- Admin API endpoints for participants and intervention data\n\n**Technical Changes:**\n- Created admin login page with session-based authentication\n- Built admin dashboard with participant table and detailed data views\n- Added ParticipantData interface with group_assignment property\n- Implemented CSV export with proper encoding (UTF-8 BOM)\n- Created API routes for admin data access with authorization\n- Added proper TypeScript types to resolve build errors\n\n**UI Improvements:**\n- Responsive grid layout for statistics and data cards\n- Color-coded status badges and group indicators\n- Expandable rows for detailed participant information\n- GPT feedback display with token usage metrics\n- Interview willingness and payment information display\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
       "Bash(del nul)",
       "Bash(git commit:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(while read file)",
+      "Bash(do echo \"=== $file ===\" grep -A 2 \"currentStep\\|totalSteps\" \"$file\")"
     ],
     "deny": [],
     "ask": []

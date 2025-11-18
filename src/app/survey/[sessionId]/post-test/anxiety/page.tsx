@@ -105,7 +105,7 @@ export default function PostTestAnxietyPage() {
 
   return (
     <SurveyLayout
-      currentStep={10}
+      currentStep={11}
       totalSteps={13}
       stepTitle="사후 검사 (3/3)"
       onNext={handleNext}

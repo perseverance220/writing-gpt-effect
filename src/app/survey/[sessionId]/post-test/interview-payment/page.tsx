@@ -74,7 +74,7 @@ export default function InterviewPaymentPage() {
 
   return (
     <SurveyLayout
-      currentStep={12}
+      currentStep={13}
       totalSteps={13}
       stepTitle="추가 정보"
       onNext={handleNext}

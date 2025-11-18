@@ -97,7 +97,7 @@ export default function QualitativePage() {
 
   return (
     <SurveyLayout
-      currentStep={11}
+      currentStep={12}
       totalSteps={13}
       stepTitle="소감 및 경험"
       onNext={handleNext}
