@@ -48,6 +48,19 @@ export default function CompletePage() {
       }
     };
     updateStatus();
+
+    // 뒤로가기 방지
+    const preventBackNavigation = () => {
+      window.history.pushState(null, '', window.location.href);
+    };
+
+    // 초기 히스토리 상태 추가
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', preventBackNavigation);
+
+    return () => {
+      window.removeEventListener('popstate', preventBackNavigation);
+    };
   }, [sessionId]);
 
   return (

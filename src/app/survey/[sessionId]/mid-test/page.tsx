@@ -123,14 +123,18 @@ export default function MidTestPage() {
           </div>
 
           {PANAS_SF_10_QUESTIONS.map((question, index) => (
-            <QuestionnaireItem
-              key={question.id}
-              questionNumber={index + 1}
-              questionText={`지금 현재 "${question.text}" 느낌이 드시나요?`}
-              value={panasResponses[question.id] || ''}
-              onChange={(value) => setPanasResponses({ ...panasResponses, [question.id]: value })}
-              options={PANAS_OPTIONS}
-            />
+            <div key={question.id} className="space-y-3 bg-white border-2 border-border rounded-xl shadow-sm p-5">
+              <div className="text-lg font-bold">
+                {index + 1}. 지금 현재 <span className="text-primary">&ldquo;{question.text}&rdquo;</span> 느낌이 드시나요?
+              </div>
+              <QuestionnaireItem
+                questionNumber={0}
+                questionText=""
+                value={panasResponses[question.id] || ''}
+                onChange={(value) => setPanasResponses({ ...panasResponses, [question.id]: value })}
+                options={PANAS_OPTIONS}
+              />
+            </div>
           ))}
         </div>
 

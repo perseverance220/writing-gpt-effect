@@ -92,11 +92,6 @@ export default function ConsentPage() {
       description: '수집된 정보는 연구 목적으로만 사용되며, 개인 식별 정보는 암호화되어 안전하게 보관됩니다.',
     },
     {
-      id: 'voluntary',
-      title: '자발적 참여 및 중단',
-      description: '참여는 자발적이며, 언제든지 중단할 수 있습니다. 중단해도 어떠한 불이익도 없습니다.',
-    },
-    {
       id: 'dataUsage',
       title: '데이터 사용 동의',
       description: '연구 결과는 학술 논문 및 학회 발표에 사용될 수 있으며, 개인 식별이 불가능한 형태로만 공개됩니다.',

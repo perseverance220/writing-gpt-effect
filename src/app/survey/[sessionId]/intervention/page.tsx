@@ -165,6 +165,9 @@ export default function InterventionPage() {
     // 먼저 완료 상태로 전환
     setIsStageCompleted(true);
 
+    // 페이지 상단으로 스크롤
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
     // A집단만 GPT 피드백 받기
     if (groupAssignment === 'A') {
       setIsLoadingFeedback(true);
