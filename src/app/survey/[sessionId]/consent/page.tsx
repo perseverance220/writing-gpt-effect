@@ -16,14 +16,12 @@ export default function ConsentPage() {
   const [consents, setConsents] = useState({
     purpose: false,
     privacy: false,
-    voluntary: false,
     dataUsage: false,
   });
 
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({
     purpose: true,
     privacy: false,
-    voluntary: false,
     dataUsage: false,
   });
 
@@ -57,7 +55,7 @@ export default function ConsentPage() {
           consents: {
             purpose: consents.purpose,
             privacy: consents.privacy,
-            voluntary: consents.voluntary,
+            voluntary: true, // UI에서는 제거했지만 DB 무결성을 위해 true 전송
             dataUsage: consents.dataUsage,
           },
         }),
@@ -92,11 +90,6 @@ export default function ConsentPage() {
       description: '수집된 정보는 연구 목적으로만 사용되며, 개인 식별 정보는 암호화되어 안전하게 보관됩니다.',
     },
     {
-      id: 'voluntary',
-      title: '자발적 참여 및 중단',
-      description: '참여는 자발적이며, 언제든지 중단할 수 있습니다. 중단해도 어떠한 불이익도 없습니다.',
-    },
-    {
       id: 'dataUsage',
       title: '데이터 사용 동의',
       description: '연구 결과는 학술 논문 및 학회 발표에 사용될 수 있으며, 개인 식별이 불가능한 형태로만 공개됩니다.',
@@ -120,7 +113,7 @@ export default function ConsentPage() {
             <div>
               <h3 className="text-xl font-bold mb-2">연구 참여 동의서</h3>
               <p className="text-base text-foreground leading-relaxed font-medium">
-                아래 4가지 항목을 확인하시고<br />
+                아래 3가지 항목을 확인하시고<br />
                 <span className="text-primary font-bold">모두 체크</span>해주셔야 다음으로 진행됩니다
               </p>
             </div>
@@ -132,13 +125,13 @@ export default function ConsentPage() {
           <div className="flex items-center justify-between">
             <span className="text-lg font-bold">동의 완료</span>
             <span className="text-2xl font-bold text-primary">
-              {Object.values(consents).filter(Boolean).length} / 4
+              {Object.values(consents).filter(Boolean).length} / 3
             </span>
           </div>
           <div className="mt-3 h-3 bg-muted rounded-full overflow-hidden">
             <div
               className="h-full bg-primary transition-all duration-300 rounded-full"
-              style={{ width: `${(Object.values(consents).filter(Boolean).length / 4) * 100}%` }}
+              style={{ width: `${(Object.values(consents).filter(Boolean).length / 3) * 100}%` }}
             />
           </div>
         </div>
@@ -256,7 +249,7 @@ export default function ConsentPage() {
         ) : (
           <Alert className="bg-amber-50 border-2 border-amber-300">
             <AlertDescription className="text-base font-semibold text-amber-900">
-              아직 {4 - Object.values(consents).filter(Boolean).length}개 항목이 남았습니다
+              아직 {3 - Object.values(consents).filter(Boolean).length}개 항목이 남았습니다
             </AlertDescription>
           </Alert>
         )}

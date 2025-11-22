@@ -3,7 +3,9 @@
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { SurveyLayout } from '@/components/layout/SurveyLayout';
-import { QuestionnaireItem } from '@/components/survey/QuestionnaireItem';
+import { Card } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Heart, Info } from 'lucide-react';
 import { PANAS_SF_10_QUESTIONS, PANAS_OPTIONS, calculatePANASScores } from '@/lib/questionnaires/panas-sf-10';
@@ -123,18 +125,29 @@ export default function MidTestPage() {
           </div>
 
           {PANAS_SF_10_QUESTIONS.map((question, index) => (
-            <div key={question.id} className="space-y-3 bg-white border-2 border-border rounded-xl shadow-sm p-5">
-              <div className="text-lg font-bold">
-                {index + 1}. 지금 현재 <span className="text-primary">&ldquo;{question.text}&rdquo;</span> 느낌이 드시나요?
+            <Card key={question.id} className="border-2 border-border rounded-xl shadow-sm p-5">
+              <div className="space-y-3">
+                <Label className="text-lg font-bold block">
+                  {index + 1}. 지금 현재 <span className="text-primary">&ldquo;{question.text}&rdquo;</span> 느낌이 드시나요?
+                </Label>
+                <RadioGroup
+                  value={panasResponses[question.id] || ''}
+                  onValueChange={(value) => setPanasResponses({ ...panasResponses, [question.id]: value })}
+                >
+                  <div className="space-y-2">
+                    {PANAS_OPTIONS.map((option) => (
+                      <label
+                        key={option.value}
+                        className="flex items-center gap-3 py-3 px-4 border-2 border-border rounded-lg hover:border-primary hover:bg-primary/5 transition-all cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary/10"
+                      >
+                        <RadioGroupItem value={option.value} className="w-6 h-6 flex-shrink-0" />
+                        <span className="text-lg font-medium">{option.label}</span>
+                      </label>
+                    ))}
+                  </div>
+                </RadioGroup>
               </div>
-              <QuestionnaireItem
-                questionNumber={0}
-                questionText=""
-                value={panasResponses[question.id] || ''}
-                onChange={(value) => setPanasResponses({ ...panasResponses, [question.id]: value })}
-                options={PANAS_OPTIONS}
-              />
-            </div>
+            </Card>
           ))}
         </div>
 
