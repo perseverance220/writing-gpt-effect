@@ -360,17 +360,22 @@ export default function InterviewPaymentPage() {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t-2 border-dashed border-primary/30">
-                <p className="text-sm text-center text-muted-foreground mb-4">
-                  위 정보가 정확한가요? 오타가 있다면 수정해주세요.
-                </p>
+              <div className="mt-6 pt-4 border-t-2 border-dashed border-primary/30 flex gap-3">
                 <Button 
                   variant="outline" 
-                  className="w-full border-2 h-12 text-lg"
+                  className="flex-1 border-2 h-12 text-lg"
                   onClick={handleEdit}
                 >
                   <Edit2 className="w-4 h-4 mr-2" />
                   정보 수정하기
+                </Button>
+                <Button 
+                  className="flex-1 h-12 text-lg font-bold"
+                  onClick={handleSubmit}
+                  disabled={isSaving}
+                >
+                  {isSaving ? '제출 중...' : '제출하기'}
+                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </div>
             </Card>
