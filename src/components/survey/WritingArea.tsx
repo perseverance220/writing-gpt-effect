@@ -6,27 +6,30 @@ import { Textarea } from '@/components/ui/textarea';
 import { Progress } from '@/components/ui/progress';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Clock, AlertCircle, CheckCircle2, FileText, Zap } from 'lucide-react';
+import { Clock, AlertCircle, CheckCircle2, FileText, Send } from 'lucide-react';
 
 interface WritingAreaProps {
   prompt: string;
-  durationMinutes: number;
+  durationMinutes: number; // 최대/권장 시간
+  minDurationSeconds?: number; // 최소 체류 시간 (초)
+  minLength?: number; // 최소 글자 수
   onComplete: (content: string, duration: number) => void;
   placeholder?: string;
   autoSubmit?: boolean;
-  isDevelopment?: boolean; // 개발 모드: 조기 제출 버튼 표시
 }
 
 export function WritingArea({
   prompt,
   durationMinutes,
+  minDurationSeconds = 180, // 기본 3분
+  minLength = 200, // 기본 200자
   onComplete,
   placeholder = '이곳에 자유롭게 작성해주세요...',
   autoSubmit = true,
-  isDevelopment = false,
 }: WritingAreaProps) {
   const [content, setContent] = useState('');
   const [timeLeft, setTimeLeft] = useState(durationMinutes * 60); // seconds
+  const [elapsedTime, setElapsedTime] = useState(0);
   const [isStarted, setIsStarted] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
   const startTimeRef = useRef<number>(0);
@@ -35,9 +38,16 @@ export function WritingArea({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const totalSeconds = durationMinutes * 60;
-  const progress = ((totalSeconds - timeLeft) / totalSeconds) * 100;
+  
+  // 타이머 표시용
   const minutes = Math.floor(timeLeft / 60);
   const seconds = timeLeft % 60;
+
+  // 조건 충족 여부
+  const charCount = content.length;
+  const isTimeMet = elapsedTime >= minDurationSeconds;
+  const isLengthMet = charCount >= minLength;
+  const canSubmit = isTimeMet && isLengthMet;
 
   // 경고 시점 (2분 남았을 때)
   const isWarning = timeLeft <= 120 && timeLeft > 0;
@@ -51,17 +61,12 @@ export function WritingArea({
   // 글쓰기 시작 시 textarea를 화면 상단에 보이도록 스크롤
   useEffect(() => {
     if (isStarted && !isCompleted && textareaRef.current) {
-      // 글쓰기 시작 직후에만 한 번 스크롤
       const textarea = textareaRef.current;
-
-      // 헤더를 피해서 적절한 위치에 표시 (상단에서 120px 정도 여유)
       textarea.scrollIntoView({
         behavior: 'smooth',
         block: 'start',
         inline: 'nearest'
       });
-
-      // 추가로 약간 위로 스크롤하여 헤더가 가리지 않도록 조정
       setTimeout(() => {
         const currentScroll = window.scrollY;
         window.scrollTo({
@@ -70,9 +75,9 @@ export function WritingArea({
         });
       }, 100);
     }
-  }, [isStarted, isCompleted]); // content 의존성 제거 - 시작 시 한 번만 실행
+  }, [isStarted, isCompleted]);
 
-  // Effect 1: 글쓰기 시작 감지 (content가 변경될 때만)
+  // Effect 1: 글쓰기 시작 감지
   useEffect(() => {
     if (content.trim() && !isStarted && !isCompleted) {
       setIsStarted(true);
@@ -80,10 +85,14 @@ export function WritingArea({
     }
   }, [content, isStarted, isCompleted]);
 
-  // Effect 2: 타이머 실행 (isStarted가 변경될 때만)
+  // Effect 2: 타이머 실행
   useEffect(() => {
     if (isStarted && !isCompleted) {
       timerRef.current = setInterval(() => {
+        // 경과 시간 증가
+        setElapsedTime((prev) => prev + 1);
+        
+        // 남은 시간 감소
         setTimeLeft((prev) => {
           if (prev <= 1) {
             // 시간 종료
@@ -92,7 +101,6 @@ export function WritingArea({
 
             if (autoSubmit) {
               const duration = Math.floor((Date.now() - startTimeRef.current) / 1000);
-              // ref를 통해 최신 content 값 가져오기
               onComplete(contentRef.current, duration);
             }
             return 0;
@@ -112,10 +120,10 @@ export function WritingArea({
   };
 
   const wordCount = content.trim().split(/\s+/).filter(Boolean).length;
-  const charCount = content.length;
 
-  const handleDevSubmit = () => {
-    if (content.trim() && !isCompleted) {
+  // 사용자 수동 제출 핸들러
+  const handleSubmit = () => {
+    if (canSubmit && !isCompleted) {
       setIsCompleted(true);
       if (timerRef.current) clearInterval(timerRef.current);
       const duration = isStarted
@@ -140,7 +148,7 @@ export function WritingArea({
         </div>
       </Card>
 
-      {/* 타이머 */}
+      {/* 상태 카드 (타이머 & 조건) */}
       <Card className={`p-6 transition-colors ${
         isUrgent ? 'bg-destructive/10 border-destructive/30' :
         isWarning ? 'bg-amber-50 border-amber-300' :
@@ -155,7 +163,7 @@ export function WritingArea({
                 'text-primary'
               }`} />
               <span className="text-base font-semibold text-muted-foreground">
-                {isCompleted ? '작성 완료' : isStarted ? '남은 시간' : '작성 시간'}
+                {isCompleted ? '작성 완료' : '남은 시간'}
               </span>
             </div>
 
@@ -168,17 +176,36 @@ export function WritingArea({
             </div>
           </div>
 
-          <Progress
-            value={progress}
-            className={`h-2 ${
-              isUrgent ? '[&>div]:bg-destructive' :
-              isWarning ? '[&>div]:bg-amber-500' :
-              ''
-            }`}
-          />
+          {/* 최소 조건 표시 */}
+          <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">최소 시간</span>
+                <span className={isTimeMet ? "text-green-600 font-bold" : "text-muted-foreground"}>
+                  {formatTime(Math.floor(elapsedTime/60), elapsedTime%60)} / {formatTime(Math.floor(minDurationSeconds/60), minDurationSeconds%60)}
+                </span>
+              </div>
+              <Progress 
+                value={Math.min((elapsedTime / minDurationSeconds) * 100, 100)} 
+                className="h-1.5" 
+              />
+            </div>
+            <div className="space-y-1">
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">최소 분량</span>
+                <span className={isLengthMet ? "text-green-600 font-bold" : "text-muted-foreground"}>
+                  {charCount} / {minLength}자
+                </span>
+              </div>
+              <Progress 
+                value={Math.min((charCount / minLength) * 100, 100)} 
+                className="h-1.5" 
+              />
+            </div>
+          </div>
 
           {!isStarted && (
-            <p className="text-sm text-muted-foreground text-center">
+            <p className="text-sm text-muted-foreground text-center mt-2">
               글을 작성하시면 타이머가 시작됩니다
             </p>
           )}
@@ -239,30 +266,44 @@ export function WritingArea({
         </div>
       </Card>
 
-      {/* 안내 */}
-      <div className="text-center p-4 bg-secondary/30 rounded-xl space-y-2">
-        <p className="text-base text-muted-foreground font-medium">
-          천천히 편안하게 작성하시면 됩니다.
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {durationMinutes}분이 경과하면 자동으로 제출되어 다음 단계로 넘어갑니다.
-        </p>
-      </div>
-
-      {/* 개발용 조기 제출 버튼 */}
-      {isDevelopment && !isCompleted && (
-        <div className="fixed bottom-6 right-6 z-50">
+      {/* 제출 버튼 및 안내 */}
+      <div className="space-y-4">
+        {!isCompleted && (
           <Button
-            onClick={handleDevSubmit}
-            disabled={!content.trim()}
+            onClick={handleSubmit}
+            disabled={!canSubmit}
             size="lg"
-            className="shadow-lg bg-amber-500 hover:bg-amber-600 text-white font-bold"
+            className={`w-full py-6 text-lg font-bold shadow-md transition-all ${
+              canSubmit 
+                ? 'bg-primary hover:bg-primary/90 animate-pulse-slow' 
+                : 'bg-muted text-muted-foreground hover:bg-muted cursor-not-allowed'
+            }`}
           >
-            <Zap className="w-5 h-5 mr-2" />
-            [DEV] 즉시 제출
+            {canSubmit ? (
+              <span className="flex items-center gap-2">
+                <Send className="w-5 h-5" />
+                작성 완료 및 제출하기
+              </span>
+            ) : (
+              <span className="flex items-center gap-2">
+                {!isTimeMet ? '충분한 시간 동안 고민해주세요' : '조금 더 작성해주세요'}
+                <span className="text-xs font-normal opacity-70">
+                  (최소 조건 미충족)
+                </span>
+              </span>
+            )}
           </Button>
+        )}
+
+        <div className="text-center p-4 bg-secondary/30 rounded-xl space-y-2">
+          <p className="text-base text-muted-foreground font-medium">
+            최소 {Math.floor(minDurationSeconds / 60)}분 이상, {minLength}자 이상 작성하시면 완료 버튼이 활성화됩니다.
+          </p>
+          <p className="text-sm text-muted-foreground">
+            최대 {durationMinutes}분이 경과하면 자동으로 제출됩니다.
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 }

@@ -111,10 +111,11 @@ export default function NegativeEventPage() {
         <WritingArea
           prompt={prompt}
           durationMinutes={10}
+          minDurationSeconds={300} // 5분
+          minLength={200} // 200자
           onComplete={handleComplete}
           placeholder="이곳에 자유롭게 작성해주세요. 정답은 없으며, 솔직한 감정을 표현하시면 됩니다..."
           autoSubmit={true}
-          isDevelopment={true} // TODO: 배포 시 false로 변경
         />
 
         {/* 에러 메시지 */}

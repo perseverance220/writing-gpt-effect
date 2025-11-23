@@ -79,7 +79,7 @@ export default function Home() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">
-                자기자비 글쓰기 연구
+                마음 돌봄 글쓰기 연구
               </h1>
               <p className="text-sm text-muted-foreground font-medium mt-0.5">
                 노년기 여성 대상 온라인 설문

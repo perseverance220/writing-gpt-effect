@@ -16,7 +16,7 @@ export default function CompletePage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-foreground">
-                자기자비 글쓰기 연구
+                마음 돌봄 글쓰기 연구
               </h1>
               <p className="text-sm text-muted-foreground mt-1">
                 설문이 완료되었습니다
@@ -90,7 +90,7 @@ export default function CompletePage() {
 
           {/* 추가 정보 */}
           <Card className="p-6 border-2">
-            <h3 className="text-lg font-bold mb-4">자기자비 실천 팁</h3>
+            <h3 className="text-lg font-bold mb-4">마음 돌봄 팁</h3>
             <div className="space-y-3 text-base text-muted-foreground">
               <p className="flex items-start gap-2">
                 <span className="text-primary font-bold">1.</span>

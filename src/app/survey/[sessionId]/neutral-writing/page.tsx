@@ -93,10 +93,11 @@ export default function NeutralWritingPage() {
         <WritingArea
           prompt={prompt}
           durationMinutes={10}
+          minDurationSeconds={300} // 5분
+          minLength={200} // 200자
           onComplete={handleComplete}
           placeholder="이곳에 자유롭게 작성해주세요. 오늘 하루 일상을 편안하게 표현하시면 됩니다..."
           autoSubmit={true}
-          isDevelopment={true} // TODO: 배포 시 false로 변경
         />
 
         {/* 에러 메시지 */}

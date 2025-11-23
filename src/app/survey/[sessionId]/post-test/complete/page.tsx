@@ -74,7 +74,7 @@ export default function CompletePage() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-foreground">
-                자기자비 글쓰기 연구
+                마음 돌봄 글쓰기 연구
               </h1>
               <p className="text-sm text-muted-foreground font-medium mt-0.5">
                 노년기 여성 대상 온라인 설문
@@ -157,7 +157,7 @@ export default function CompletePage() {
               </p>
               <p className="text-base text-muted-foreground leading-relaxed">
                 노년기 여성의 정신건강 증진을 위한<br />
-                자기자비 글쓰기 프로그램 개발에<br />
+                마음 돌봄 글쓰기 프로그램 개발에<br />
                 소중한 자료로 활용됩니다
               </p>
               <div className="mt-5 pt-5 border-t-2 border-border">
@@ -182,7 +182,7 @@ export default function CompletePage() {
 
       {/* 푸터 */}
       <footer className="p-4 text-center text-sm text-muted-foreground bg-white/30 border-t border-border">
-        <p className="font-medium">자기자비 글쓰기 연구 | ellenlove@hanmail.net</p>
+        <p className="font-medium">마음 돌봄 글쓰기 연구 | ellenlove@hanmail.net</p>
       </footer>
     </div>
   );

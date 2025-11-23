@@ -82,7 +82,7 @@ export default function PreTestPage() {
         {/* SCS-SF-12 섹션 */}
         <div className="space-y-6">
           <div className="bg-primary/5 border-l-4 border-primary p-5 rounded-lg">
-            <h3 className="text-xl font-bold mb-2">Part 1. 자기자비 척도 (12문항)</h3>
+            <h3 className="text-xl font-bold mb-2">Part 1. 나를 대하는 태도 (12문항)</h3>
             <p className="text-base text-muted-foreground">
               힘든 시기나 어려운 상황에서 자신을 어떻게 대하는지에 대한 질문입니다.
             </p>

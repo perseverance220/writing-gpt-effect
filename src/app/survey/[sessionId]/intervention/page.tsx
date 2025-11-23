@@ -81,17 +81,17 @@ export default function InterventionPage() {
   const prompts = {
     A: [
       {
-        title: '공통인류성 (Common Humanity)',
+        title: '모두가 겪는 일임을 기억하기', // 공통인류성
         content: `방금 떠올린 힘든 경험에 대해 생각해보세요.
 
 이런 어려움은 당신만의 것이 아니며, 많은 사람들이 비슷한 경험을 합니다.
 
 • 다른 사람들도 이런 어려움을 겪을 수 있다는 것을 생각해보세요
-• 이것은 인간이라면 누구나 겪을 수 있는 경험입니다
+• 이것은 사람이라면 누구나 겪을 수 있는 경험입니다
 • 혼자가 아님을 떠올리며 작성해주세요`,
       },
       {
-        title: '자기친절 (Self-Kindness)',
+        title: '나에게 친절하게 대하기', // 자기친절
         content: `이제 당신 자신에게 친절하게 말을 걸어보세요.
 
 마치 가까운 친구가 같은 어려움을 겪고 있다면 어떻게 위로할지 생각하며, 자신에게 그렇게 말해주세요.
@@ -101,7 +101,7 @@ export default function InterventionPage() {
 • 스스로를 돌보는 것은 이기적인 것이 아닙니다`,
       },
       {
-        title: '마음챙김 (Mindfulness)',
+        title: '내 감정을 있는 그대로 바라보기', // 마음챙김
         content: `앞서 떠올린 그 사건을 생각했을 때, 지금 이 순간 느껴지는 감정을 객관적이고 담담하게 관찰해보세요.
 
 마치 제3자의 시선으로 바라보듯, 판단하지 말고 있는 그대로 바라봐주세요.
@@ -113,17 +113,17 @@ export default function InterventionPage() {
     ],
     B: [
       {
-        title: '공통인류성',
+        title: '모두가 겪는 일임을 기억하기',
         content: `방금 떠올린 힘든 경험에 대해 생각해보세요.
 
 이런 어려움은 당신만의 것이 아니며, 많은 사람들이 비슷한 경험을 합니다.
 
 • 다른 사람들도 이런 어려움을 겪을 수 있다는 것을 생각해보세요
-• 이것은 인간이라면 누구나 겪을 수 있는 경험입니다
+• 이것은 사람이라면 누구나 겪을 수 있는 경험입니다
 • 혼자가 아님을 떠올리며 작성해주세요`,
       },
       {
-        title: '자기친절',
+        title: '나에게 친절하게 대하기',
         content: `이제 당신 자신에게 친절하게 말을 걸어보세요.
 
 마치 가까운 친구가 같은 어려움을 겪고 있다면 어떻게 위로할지 생각하며, 자신에게 그렇게 말해주세요.
@@ -133,7 +133,7 @@ export default function InterventionPage() {
 • 스스로를 돌보는 것은 이기적인 것이 아닙니다`,
       },
       {
-        title: '마음챙김',
+        title: '내 감정을 있는 그대로 바라보기',
         content: `앞서 떠올린 그 사건을 생각했을 때, 지금 이 순간 느껴지는 감정을 객관적이고 담담하게 관찰해보세요.
 
 마치 제3자의 시선으로 바라보듯, 판단하지 말고 있는 그대로 바라봐주세요.
@@ -304,9 +304,9 @@ export default function InterventionPage() {
   };
 
   const groupInfo = {
-    A: { name: 'A집단', description: '자기자비 글쓰기 + AI 피드백' },
-    B: { name: 'B집단', description: '자기자비 글쓰기' },
-    C: { name: 'C집단', description: '중립적 글쓰기' },
+    A: { name: 'A집단', description: '마음 돌봄 글쓰기 + AI 피드백' },
+    B: { name: 'B집단', description: '마음 돌봄 글쓰기' },
+    C: { name: 'C집단', description: '일상 글쓰기' },
   };
 
   return (
@@ -341,10 +341,11 @@ export default function InterventionPage() {
         {!isStageCompleted && (
           <WritingArea
             prompt={currentPrompt.content}
-            durationMinutes={groupAssignment === 'C' ? 10 : 3}
+            durationMinutes={groupAssignment === 'C' ? 10 : (currentStage === 3 ? 4 : 3)}
+            minDurationSeconds={groupAssignment === 'C' ? 300 : 60}
+            minLength={groupAssignment === 'C' ? 200 : 50}
             onComplete={handleStageComplete}
             autoSubmit={true}
-            isDevelopment={true}
           />
         )}
 

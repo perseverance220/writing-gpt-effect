@@ -79,7 +79,7 @@ export default function PostTestSelfCompassionPage() {
           <div className="flex gap-3">
             <Heart className="w-7 h-7 text-primary flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-lg font-bold mb-1">자기자비 검사</h3>
+              <h3 className="text-lg font-bold mb-1">나를 대하는 태도 질문</h3>
               <p className="text-base text-muted-foreground leading-relaxed">
                 <strong>지금 현재</strong> 자신에 대해 어떻게 생각하고 행동하는지 가장 가까운 답변을 선택해주세요
               </p>
