@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Phone, CreditCard, Info, CheckCircle2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Phone, CreditCard, Info, CheckCircle2, ArrowRight, Edit2 } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -150,10 +151,8 @@ export default function InterviewPaymentPage() {
       stepTitle="추가 정보"
       onNext={isReviewing ? handleSubmit : handleReview}
       isNextDisabled={!isFormComplete || isSaving}
-      nextLabel={isSaving ? "저장 중..." : (isReviewing ? "최종 제출하기" : "입력 정보 확인")}
-      showPrev={isReviewing}
-      onPrev={isReviewing ? handleEdit : undefined}
-      prevLabel="정보 수정"
+      nextLabel={isSaving ? "저장 중..." : (isReviewing ? "확인 및 제출" : "다음")}
+      showFooter={!isReviewing}
     >
       <div className="space-y-6">
         {/* 안내 */}
@@ -361,10 +360,23 @@ export default function InterviewPaymentPage() {
                 </div>
               </div>
 
-              <div className="mt-6 pt-4 border-t-2 border-dashed border-primary/30">
-                <p className="text-center text-lg font-medium text-primary animate-pulse">
-                  👇 하단의 <span className="font-bold">최종 제출하기</span> 버튼을 눌러주세요
-                </p>
+              <div className="mt-6 pt-4 border-t-2 border-dashed border-primary/30 flex flex-col sm:flex-row gap-3">
+                <Button 
+                  variant="outline" 
+                  className="w-full sm:flex-1 border-2 h-14 sm:h-12 text-lg"
+                  onClick={handleEdit}
+                >
+                  <Edit2 className="w-4 h-4 mr-2" />
+                  정보 수정하기
+                </Button>
+                <Button 
+                  className="w-full sm:flex-1 h-14 sm:h-12 text-lg font-bold"
+                  onClick={handleSubmit}
+                  disabled={isSaving}
+                >
+                  {isSaving ? '제출 중...' : '제출하기'}
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
               </div>
             </Card>
           </div>
